@@ -180,17 +180,17 @@
       font-weight: 600;
     }
 
-    /* Two Options Group */
-    .options-group {
+    /* Smooth Sliding Dual Buttons Track */
+    .buttons-track {
       display: flex;
       gap: 10px;
       width: 100%;
       margin-bottom: 16px;
+      position: relative;
     }
 
     .option-btn {
-      flex: 1;
-      padding: 13px 8px;
+      padding: 13px 12px;
       border-radius: 999px;
       font-size: 13px;
       font-weight: 600;
@@ -202,7 +202,18 @@
       background: #171922;
       border: 1px solid #282d3d;
       color: #9ca3af;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+      white-space: nowrap;
+      /* Smooth width, transform and opacity transition */
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #btnSilence {
+      flex: 1;
+    }
+
+    #btnClean {
+      flex: 1;
     }
 
     .option-btn:hover {
@@ -210,11 +221,32 @@
       color: #fff;
     }
 
-    .option-btn.active {
+    /* EXPAND SLIDE ANIMATION ON CLICKING SILENCE */
+    .buttons-track.silence-expanded #btnSilence {
+      flex: 1 1 100%;
       background: #1f2330;
       border-color: #f59e0b;
       color: #ffffff;
-      box-shadow: 0 0 18px rgba(245, 158, 11, 0.25);
+      box-shadow: 0 0 22px rgba(245, 158, 11, 0.3);
+    }
+
+    .buttons-track.silence-expanded #btnClean {
+      flex: 0 0 0% !important;
+      width: 0 !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      border-width: 0 !important;
+      opacity: 0 !important;
+      pointer-events: none;
+      transform: scale(0.8);
+    }
+
+    /* Clean Audio Active State */
+    .buttons-track.clean-active #btnClean {
+      background: #1f2330;
+      border-color: #f59e0b;
+      color: #ffffff;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
     }
 
     /* Clean Audio Section */
@@ -547,8 +579,8 @@
         <button type="button" class="change-file-btn" onclick="resetToUpload()">Change</button>
       </div>
 
-      <!-- Step 2: The Two Choice Tabs (Hidden until file selected) -->
-      <div class="options-group hidden" id="optionsGroup">
+      <!-- Step 2: Smooth Sliding Choice Tabs -->
+      <div class="buttons-track hidden" id="buttonsTrack">
         <button type="button" class="option-btn" id="btnSilence" onclick="handleSilenceClick()">
           ✂️ Silence Remover
         </button>
@@ -626,7 +658,7 @@
       </div>
     </div>
 
-    <!-- Single Profile Footer (Zain Shabir) -->
+    <!-- Developer Footer -->
     <footer class="footer">
       <span>Engineered by</span>
       <a href="https://www.linkedin.com/in/zain-shabir-38a345322" target="_blank" rel="noopener noreferrer" class="profile-card">
@@ -652,7 +684,7 @@
     const dropZone = document.getElementById('dropZone');
     const fileBadgeBox = document.getElementById('fileBadgeBox');
     const fileNameDisplay = document.getElementById('fileNameDisplay');
-    const optionsGroup = document.getElementById('optionsGroup');
+    const buttonsTrack = document.getElementById('buttonsTrack');
     const btnSilence = document.getElementById('btnSilence');
     const btnClean = document.getElementById('btnClean');
     const cleanConfigSection = document.getElementById('cleanConfigSection');
@@ -670,13 +702,11 @@
       currentJobId = null;
       fileNameDisplay.textContent = file.name;
 
-      // Upload area hide karein, file badge aur options samne layein
       dropZone.classList.add('hidden');
       fileBadgeBox.classList.remove('hidden');
-      optionsGroup.classList.remove('hidden');
+      buttonsTrack.classList.remove('hidden');
+      buttonsTrack.className = "buttons-track"; // Reset track layout
 
-      btnSilence.classList.remove('active');
-      btnClean.classList.remove('active');
       cleanConfigSection.classList.add('hidden');
       resultBox.classList.add('hidden');
       statusMsg.innerText = "";
@@ -687,7 +717,8 @@
       currentJobId = null;
       dropZone.classList.remove('hidden');
       fileBadgeBox.classList.add('hidden');
-      optionsGroup.classList.add('hidden');
+      buttonsTrack.classList.add('hidden');
+      buttonsTrack.className = "buttons-track";
       cleanConfigSection.classList.add('hidden');
       resultBox.classList.add('hidden');
       statusMsg.innerText = "";
@@ -715,19 +746,17 @@
       }
     });
 
-    // Option 1: Silence Remover (Click karte hi automatic start ho jaye)
+    // Silence Remover click: Button expands over Clean Audio & automatically processes
     function handleSilenceClick() {
-      btnSilence.classList.add('active');
-      btnClean.classList.remove('active');
+      buttonsTrack.className = "buttons-track silence-expanded";
       cleanConfigSection.classList.add('hidden');
 
       executeBackendRequest('/api/remove-silence', null, "Trimming silent dead-air pauses...");
     }
 
-    // Option 2: Clean Audio (Click karne par options aur Start Process button aaye)
+    // Clean Audio click: Reveals options + Start Process button
     function handleCleanClick() {
-      btnClean.classList.add('active');
-      btnSilence.classList.remove('active');
+      buttonsTrack.className = "buttons-track clean-active";
       cleanConfigSection.classList.remove('hidden');
       resultBox.classList.add('hidden');
     }
@@ -783,7 +812,7 @@
         audioPlayer.src = data.audio_url;
         downloadBtn.href = data.audio_url;
 
-        // Transcript display if clean audio mode
+        // Transcript handling
         if (data.transcript && data.censored_words) {
           transcriptBox.classList.remove('hidden');
           transcriptBox.innerHTML = data.transcript.map(w => {
@@ -793,7 +822,6 @@
           }).join(" ");
           followUpCleanTab.classList.add('hidden');
         } else {
-          // If silence remover was clicked, show follow-up clean tab
           followUpCleanTab.classList.remove('hidden');
         }
 
