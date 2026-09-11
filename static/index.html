@@ -76,6 +76,7 @@
       flex-direction: column;
       align-items: center;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+      position: relative;
     }
 
     /* Upload Zone Drop Label */
@@ -183,14 +184,14 @@
     /* Smooth Sliding Dual Buttons Track */
     .buttons-track {
       display: flex;
-      gap: 10px;
       width: 100%;
+      gap: 10px;
       margin-bottom: 16px;
-      position: relative;
+      transition: gap 0.4s ease;
     }
 
     .option-btn {
-      padding: 13px 12px;
+      height: 48px;
       border-radius: 999px;
       font-size: 13px;
       font-weight: 600;
@@ -202,18 +203,17 @@
       background: #171922;
       border: 1px solid #282d3d;
       color: #9ca3af;
-      overflow: hidden;
       white-space: nowrap;
-      /* Smooth width, transform and opacity transition */
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+      transition: all 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
     #btnSilence {
-      flex: 1;
+      width: calc(50% - 5px);
     }
 
     #btnClean {
-      flex: 1;
+      width: calc(50% - 5px);
     }
 
     .option-btn:hover {
@@ -221,24 +221,26 @@
       color: #fff;
     }
 
-    /* EXPAND SLIDE ANIMATION ON CLICKING SILENCE */
-    .buttons-track.silence-expanded #btnSilence {
-      flex: 1 1 100%;
-      background: #1f2330;
-      border-color: #f59e0b;
-      color: #ffffff;
-      box-shadow: 0 0 22px rgba(245, 158, 11, 0.3);
+    /* EXPANDED SILENCE REMOVER: Slides & stretches to 100% */
+    .buttons-track.silence-full-active {
+      gap: 0px;
     }
 
-    .buttons-track.silence-expanded #btnClean {
-      flex: 0 0 0% !important;
-      width: 0 !important;
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-      border-width: 0 !important;
+    .buttons-track.silence-full-active #btnSilence {
+      width: 100% !important;
+      background: #1f2330 !important;
+      border-color: #f59e0b !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.3) !important;
+    }
+
+    .buttons-track.silence-full-active #btnClean {
+      width: 0% !important;
+      padding: 0px !important;
+      margin: 0px !important;
+      border: none !important;
       opacity: 0 !important;
-      pointer-events: none;
-      transform: scale(0.8);
+      pointer-events: none !important;
     }
 
     /* Clean Audio Active State */
@@ -422,15 +424,16 @@
       background: rgba(245, 158, 11, 0.05);
       border: 1.5px dashed rgba(245, 158, 11, 0.35);
       border-radius: 14px;
-      padding: 13px;
+      padding: 14px 12px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
     }
 
     .clean-prompt-tab:hover {
-      background: rgba(245, 158, 11, 0.1);
+      background: rgba(245, 158, 11, 0.12);
       border-color: #f59e0b;
+      transform: translateY(-1px);
     }
 
     .transcript-box {
@@ -568,7 +571,7 @@
         </div>
       </label>
 
-      <!-- Active File Loaded Badge (Replaces Upload Area) -->
+      <!-- Active File Loaded Badge -->
       <div class="file-badge-box hidden" id="fileBadgeBox">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M9 18V5l12-2v13"></path>
@@ -646,8 +649,8 @@
           Download Processed Audio
         </a>
 
-        <!-- Follow-up prompt to clean words in this silence-trimmed file -->
-        <div class="clean-prompt-tab hidden" id="followUpCleanTab" onclick="handleCleanClick()">
+        <!-- Follow-up clean tab on silence-trimmed file -->
+        <div class="clean-prompt-tab hidden" id="followUpCleanTab" onclick="handleCleanAfterSilence()">
           <div style="font-size: 13px; font-weight: 700; color: #f59e0b;">🔇 Clean words in this audio?</div>
           <div style="font-size: 11px; color: #9ca3af; margin-top: 3px;">Click to open censorship options for this file</div>
         </div>
@@ -705,7 +708,7 @@
       dropZone.classList.add('hidden');
       fileBadgeBox.classList.remove('hidden');
       buttonsTrack.classList.remove('hidden');
-      buttonsTrack.className = "buttons-track"; // Reset track layout
+      buttonsTrack.className = "buttons-track"; // Reset initial state
 
       cleanConfigSection.classList.add('hidden');
       resultBox.classList.add('hidden');
@@ -746,19 +749,25 @@
       }
     });
 
-    // Silence Remover click: Button expands over Clean Audio & automatically processes
+    // 1. Silence click: Button smoothly slides & stretches to 100% width, Clean Audio vanishes
     function handleSilenceClick() {
-      buttonsTrack.className = "buttons-track silence-expanded";
+      buttonsTrack.className = "buttons-track silence-full-active";
       cleanConfigSection.classList.add('hidden');
 
       executeBackendRequest('/api/remove-silence', null, "Trimming silent dead-air pauses...");
     }
 
-    // Clean Audio click: Reveals options + Start Process button
+    // 2. Clean Audio click
     function handleCleanClick() {
       buttonsTrack.className = "buttons-track clean-active";
       cleanConfigSection.classList.remove('hidden');
       resultBox.classList.add('hidden');
+    }
+
+    // 3. User clicks the bottom Clean prompt card
+    function handleCleanAfterSilence() {
+      cleanConfigSection.classList.remove('hidden');
+      cleanConfigSection.scrollIntoView({ behavior: 'smooth' });
     }
 
     function setCensorMode(mode) {
