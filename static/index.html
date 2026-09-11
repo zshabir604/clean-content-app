@@ -1,518 +1,302 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CleanContent AI — Smart Audio Editor</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CleanContent .ai</title>
   <style>
-    :root {
-      --bg: #090a0f;
-      --card-bg: rgba(18, 20, 29, 0.7);
-      --yellow: #f5b700;
-      --yellow-glow: rgba(245, 183, 0, 0.2);
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --border: rgba(255, 255, 255, 0.08);
-      --border-hover: rgba(245, 183, 0, 0.4);
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
+      background-color: #0d0e12;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 30px 30px;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
       min-height: 100vh;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: 24px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      background-image: 
-        radial-gradient(circle at 50% 0%, rgba(245, 183, 0, 0.08), transparent 45%),
-        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      background-size: 100% 100%, 36px 36px, 36px 36px;
-      padding: 0 20px 60px;
     }
-    .nav {
+
+    /* Header Bar */
+    .top-bar {
       width: 100%;
-      max-width: 900px;
-      padding: 24px 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 40px;
+      margin-bottom: 32px;
     }
-    .logo { font-weight: 800; font-size: 20px; display: flex; align-items: center; gap: 8px; }
-    .logo span { color: var(--yellow); }
-    .badge {
-      background: rgba(245, 183, 0, 0.1);
-      border: 1px solid var(--border-hover);
-      color: var(--yellow);
-      font-size: 12px;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-weight: 600;
-    }
-    .hero { text-align: center; max-width: 650px; margin-bottom: 30px; }
-    h1 { font-size: clamp(32px, 5vw, 44px); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; }
-    h1 span { color: var(--yellow); }
-    p.sub { color: var(--muted); font-size: 15px; margin-top: 12px; line-height: 1.6; }
 
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .logo span {
+      color: #f59e0b;
+    }
+
+    .badge {
+      border: 1px solid #785210;
+      color: #f59e0b;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(245, 158, 11, 0.05);
+    }
+
+    /* Heading Section */
+    .hero-title {
+      text-align: center;
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 14px;
+    }
+
+    .hero-title .line-1 {
+      display: block;
+      color: #ffffff;
+    }
+
+    .hero-title .line-2 {
+      display: block;
+      color: #f59e0b;
+    }
+
+    .hero-desc {
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #9ca3af;
+      max-width: 320px;
+      margin: 0 auto 28px;
+    }
+
+    /* Main Upload Card */
     .card {
       width: 100%;
-      max-width: 680px;
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      border: 1.5px dashed var(--border);
-      border-radius: 24px;
-      padding: 40px 24px;
+      background: #13151b;
+      border: 1px solid #1f232e;
+      border-radius: 20px;
+      padding: 28px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .icon-box {
+      width: 56px;
+      height: 56px;
+      background: #f59e0b;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.45);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
       text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-      transition: all 0.3s ease;
     }
-    .card:hover { border-color: var(--border-hover); }
 
-    .upload-icon {
-      width: 64px; height: 64px;
-      background: var(--yellow);
-      border-radius: 18px;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 16px;
-      font-size: 26px;
-      box-shadow: 0 10px 25px var(--yellow-glow);
+    .card-subtitle {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .browse-link {
+      color: #f59e0b;
+      text-decoration: underline;
       cursor: pointer;
-      transition: transform 0.2s;
     }
-    .upload-icon:hover { transform: scale(1.05); }
 
-    .browse { color: var(--yellow); font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; }
-    .tags { display: flex; gap: 8px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
-    .tag { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 12px; color: var(--muted); }
-
-    /* Tool Options Cards */
-    .tool-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin: 24px 0;
+    /* Toggle Option Buttons */
+    .options-group {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      margin-bottom: 16px;
     }
-    .tool-box {
-      background: rgba(255,255,255,0.02);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px 16px;
+
+    .option-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: #181b22;
+      border: 1px solid #282c37;
+      color: #9ca3af;
       cursor: pointer;
-      text-align: left;
       transition: all 0.2s ease;
     }
-    .tool-box:hover {
-      border-color: var(--yellow);
-      background: rgba(245, 183, 0, 0.04);
-      transform: translateY(-2px);
-    }
-    .tool-box h4 { font-size: 16px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
-    .tool-box p { font-size: 12px; color: var(--muted); line-height: 1.5; }
 
-    /* Censor Settings Area */
-    .censor-config {
-      text-align: left;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 20px;
-    }
-    .mode-options { display: flex; gap: 10px; margin: 12px 0 16px; flex-wrap: wrap; }
-    .mode-btn {
-      padding: 8px 16px; border-radius: 10px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.02);
-      color: var(--text); cursor: pointer; font-weight: 600; font-size: 13px;
-    }
-    .mode-btn.selected { border-color: var(--yellow); background: var(--yellow-glow); color: var(--yellow); }
-
-    .word-input-container { display: flex; gap: 8px; margin-top: 6px; }
-    .custom-input {
-      flex: 1; padding: 10px 14px; border-radius: 10px;
-      border: 1px solid var(--border); background: rgba(0,0,0,0.4);
-      color: #fff; font-size: 13px; outline: none;
-    }
-    .add-btn {
-      background: rgba(245, 183, 0, 0.15); border: 1px solid var(--border-hover);
-      color: var(--yellow); font-weight: 700; padding: 0 16px;
-      border-radius: 10px; cursor: pointer; font-size: 12px;
-    }
-    .words-badge-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-    .word-pill {
-      background: rgba(245, 183, 0, 0.12); border: 1px solid var(--border-hover);
-      color: var(--yellow); padding: 3px 8px; border-radius: 12px; font-size: 11px;
-    }
-    .word-pill span { cursor: pointer; color: #fff; font-weight: bold; margin-left: 4px; }
-
-    .primary-btn {
-      background: var(--yellow); color: #000; border: none;
-      padding: 14px 28px; border-radius: 12px; font-weight: 700;
-      font-size: 14px; cursor: pointer; transition: opacity 0.2s;
-      box-shadow: 0 8px 20px var(--yellow-glow);
-    }
-    .primary-btn:hover { opacity: 0.9; }
-    .primary-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    .sec-btn {
-      background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border);
-      padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer;
-    }
-    .sec-btn:hover { background: rgba(255,255,255,0.1); }
-
-    audio { width: 100%; margin: 20px 0; outline: none; border-radius: 10px; }
-    .transcript {
-      text-align: left; max-height: 160px; overflow-y: auto;
-      background: rgba(0,0,0,0.4); border: 1px solid var(--border);
-      border-radius: 12px; padding: 14px; margin: 16px 0; font-size: 13px; line-height: 1.7;
-    }
-    .bad-word { color: var(--yellow); font-weight: 700; background: var(--yellow-glow); padding: 2px 4px; border-radius: 4px; }
-    #status { margin-top: 14px; color: var(--muted); font-size: 13px; min-height: 18px; }
-
-    .team-section {
-      width: 100%; max-width: 680px; margin-top: 40px; padding-top: 30px;
-      border-top: 1px solid var(--border); text-align: center;
-    }
-    .team-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 700; margin-bottom: 20px; }
-    .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .member-card {
-      background: rgba(255,255,255,0.02); border: 1px solid var(--border);
-      padding: 14px; border-radius: 16px; text-align: left;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .member-profile { display: flex; align-items: center; gap: 10px; }
-    .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--yellow); }
-    .member-info h4 { font-size: 14px; font-weight: 700; color: #fff; }
-    .member-info p { font-size: 11px; color: var(--yellow); }
-    .social-link {
-      background: rgba(255,255,255,0.05); color: var(--muted);
-      width: 32px; height: 32px; border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      text-decoration: none; font-size: 13px; font-weight: 700;
+    .option-btn.active {
+      background: #20242f;
+      border-color: #f59e0b;
+      color: #ffffff;
     }
 
-    .hidden { display: none; }
-    a.primary-btn { display: inline-block; text-decoration: none; }
+    /* Conditional Add Words Tab */
+    #wordsSection {
+      width: 100%;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
 
-    @media (max-width: 540px) {
-      .tool-grid, .team-grid { grid-template-columns: 1fr; }
+    #wordsSection.hidden {
+      display: none;
+    }
+
+    .words-label {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .words-input {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 10px;
+      background: #0d0e12;
+      border: 1px solid #282c37;
+      color: #ffffff;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .words-input:focus {
+      border-color: #f59e0b;
+    }
+
+    /* Info Badge */
+    .size-limit {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #1c1f28;
+      color: #9ca3af;
+      font-size: 11px;
+      padding: 5px 12px;
+      border-radius: 999px;
+    }
+
+    #fileInput {
+      display: none;
     }
   </style>
 </head>
 <body>
 
-  <header class="nav">
-    <div class="logo">CleanContent<span>.ai</span></div>
-    <div class="badge">v1.1 Multi-Tool</div>
-  </header>
-
-  <section class="hero">
-    <h1>Smart Audio Suite. <span>Clean & Cut.</span></h1>
-    <p class="sub">Remove awkward pauses with Silence Remover, or sanitize speech & sensitive words with Complete Silence.</p>
-  </section>
-
-  <div class="card" id="dropzone">
-
-    <!-- STEP 1: Upload -->
-    <div id="step-upload">
-      <div class="upload-icon" id="browseIcon">⚡</div>
-      <h3 style="font-size: 18px; margin-bottom: 6px;">Select or drop your audio clip</h3>
-      <p class="sub" style="font-size: 13px;">MP3, WAV, M4A supported. <span class="browse" id="browseBtn">Browse files</span></p>
-      <input type="file" id="fileInput" accept="*/*" class="hidden">
-      
-      <div class="tags">
-        <span class="tag">✂️ Silence Remover</span>
-        <span class="tag">🔇 Word Censoring</span>
-        <span class="tag">⏱ Max 100 MB</span>
-      </div>
+  <div class="container">
+    <!-- Top Header -->
+    <div class="top-bar">
+      <div class="logo">CleanContent <span>.ai</span></div>
+      <div class="badge">v1.1 Multi-Tool</div>
     </div>
 
-    <!-- STEP 2: Choose Operation -->
-    <div id="step-choose-tool" class="hidden">
-      <h3 id="fileNameLabel" style="font-size: 16px; color: var(--yellow); margin-bottom: 4px;"></h3>
-      <p class="sub" style="font-size: 13px;">What would you like to do with this file?</p>
+    <!-- Main Title -->
+    <h1 class="hero-title">
+      <span class="line-1">Smart Audio Suite.</span>
+      <span class="line-2">Clean & Cut.</span>
+    </h1>
 
-      <div class="tool-grid">
-        <!-- Option A: Silence Remover -->
-        <div class="tool-box" id="btnChooseSilenceRemover">
-          <h4>✂️ Silence Remover</h4>
-          <p>Trims long pauses and dead-air automatically for crisp, fast-paced speech.</p>
-        </div>
+    <!-- Centered Paragraph -->
+    <p class="hero-desc">
+      Remove awkward pauses with Silence Remover, or sanitize speech & sensitive words with Complete Silence.
+    </p>
 
-        <!-- Option B: Clean Audio -->
-        <div class="tool-box" id="btnChooseCleanWords">
-          <h4>🔇 Clean Words</h4>
-          <p>Mute profanities, weapons, narcotics, and custom target keywords completely.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- SUB-STEP: Clean Words Configuration Area -->
-    <div id="step-censor-config" class="hidden">
-      <div class="censor-config">
-        <div style="font-size: 12px; color: var(--muted); font-weight: 700;">1. CENSORSHIP METHOD:</div>
-        <div class="mode-options">
-          <div class="mode-btn selected" data-mode="silence">🔇 Silence</div>
-          <div class="mode-btn" data-mode="beep">🔊 Beep</div>
-          <div class="mode-btn" data-mode="remove">✂️ Cut Word</div>
-        </div>
-
-        <div style="font-size: 12px; color: var(--muted); font-weight: 700;">2. ADD CUSTOM WORDS (OPTIONAL):</div>
-        <div class="word-input-container">
-          <input type="text" id="customWordsInput" class="custom-input" placeholder="Type a word and hit Add">
-          <button type="button" class="add-btn" id="addWordBtn">+ Add</button>
-        </div>
-        <div class="words-badge-list" id="wordBadgeList"></div>
+    <!-- Upload Card -->
+    <div class="card">
+      <div class="icon-box">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="#000">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+        </svg>
       </div>
 
-      <button class="primary-btn" id="startCensoringBtn">Sanitize Audio Now</button>
-      <div style="margin-top: 10px;">
-        <button class="sec-btn" onclick="backToToolSelection()">← Back</button>
+      <div class="card-title">Select or drop your audio clip</div>
+      <div class="card-subtitle">
+        MP3, WAV, M4A, MP4 supported. 
+        <span class="browse-link" onclick="document.getElementById('fileInput').click()">Browse files</span>
       </div>
-      <div id="status"></div>
-    </div>
 
-    <!-- STEP 3: Preview & Next Action -->
-    <div id="step-result" class="hidden">
-      <h3 id="resultTitle" style="font-size: 18px; color: var(--yellow);">Audio Processed Successfully</h3>
-      <audio id="player" controls></audio>
-      
-      <div class="transcript hidden" id="transcriptBox"></div>
+      <input type="file" id="fileInput" accept="audio/*,video/*" />
 
-      <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 15px;">
-        <a id="downloadBtn" class="primary-btn">Download Clean MP3</a>
-        
-        <!-- Button to pass current trimmed audio directly into censor pipeline -->
-        <button id="cleanThisNextBtn" class="sec-btn" style="border-color: var(--yellow); color: var(--yellow);">
-          🔇 Now Clean Words in This Audio
+      <!-- Mode Selector -->
+      <div class="options-group">
+        <button type="button" class="option-btn active" id="btnSilence" onclick="selectTool('silence')">
+          ✂️ Silence Remover
+        </button>
+        <button type="button" class="option-btn" id="btnClean" onclick="selectTool('clean')">
+          🔇 Clean Audio
         </button>
       </div>
 
-      <div style="margin-top: 15px;">
-        <button class="sec-btn" onclick="startOver()">Upload Another File</button>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="team-section">
-    <div class="team-title">Engineered & Designed By</div>
-    <div class="team-grid">
-      <div class="member-card">
-        <div class="member-profile">
-          <img src="/static/zain.jpg" alt="Zain Shabir" class="avatar" onerror="this.src='https://ui-avatars.com/api/?name=Zain+Shabir&background=f5b700&color=000'">
-          <div class="member-info">
-            <h4>Zain Shabir</h4>
-            <p>Web App Developer</p>
-          </div>
-        </div>
-        <a href="https://www.linkedin.com/in/zain-shabir-38a345322" target="_blank" class="social-link">in</a>
+      <!-- Add Words Tab (Only visible in Clean Audio) -->
+      <div id="wordsSection" class="hidden">
+        <label class="words-label" for="badWordsInput">Add words to mute (comma separated):</label>
+        <input type="text" id="badWordsInput" class="words-input" placeholder="e.g. badword, swear, silence" />
       </div>
 
-      <div class="member-card">
-        <div class="member-profile">
-          <img src="/static/bilal.jpg" alt="Bilal" class="avatar" onerror="this.src='https://ui-avatars.com/api/?name=Bilal&background=222&color=fff'">
-          <div class="member-info">
-            <h4>Bilal</h4>
-            <p>Web UI/UX Designer</p>
-          </div>
-        </div>
-        <a href="https://www.linkedin.com" target="_blank" class="social-link">in</a>
+      <div class="size-limit">
+        ⏱️ Max 100 MB
       </div>
     </div>
   </div>
 
-<script>
-const API_BASE = "";
-let selectedFile = null;
-let currentJobId = null;
-let selectedMode = "silence";
-let addedWordsList = [];
+  <script>
+    function selectTool(mode) {
+      const btnSilence = document.getElementById('btnSilence');
+      const btnClean = document.getElementById('btnClean');
+      const wordsSection = document.getElementById('wordsSection');
 
-const fileInput = document.getElementById("fileInput");
-document.getElementById("browseBtn").onclick = () => fileInput.click();
-document.getElementById("browseIcon").onclick = () => fileInput.click();
+      if (mode === 'silence') {
+        // Silence Remover active: hide words input
+        btnSilence.classList.add('active');
+        btnClean.classList.remove('active');
+        wordsSection.classList.add('hidden');
+      } else if (mode === 'clean') {
+        // Clean Audio active: show words input
+        btnClean.classList.add('active');
+        btnSilence.classList.remove('active');
+        wordsSection.classList.remove('hidden');
+      }
+    }
 
-const dropzone = document.getElementById("dropzone");
-dropzone.ondragover = (e) => e.preventDefault();
-dropzone.ondrop = (e) => {
-  e.preventDefault();
-  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-};
-fileInput.onchange = () => { if (fileInput.files.length) handleFile(fileInput.files[0]); };
+    // File selection listener
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        document.querySelector('.card-title').innerText = e.target.files[0].name;
+      }
+    });
+  </script>
 
-function handleFile(file) {
-  selectedFile = file;
-  currentJobId = null;
-  document.getElementById("fileNameLabel").textContent = "File: " + file.name;
-  document.getElementById("step-upload").classList.add("hidden");
-  document.getElementById("step-choose-tool").classList.remove("hidden");
-}
-
-function backToToolSelection() {
-  document.getElementById("step-censor-config").classList.add("hidden");
-  document.getElementById("step-choose-tool").classList.remove("hidden");
-}
-
-// Choice 1: Silence Remover
-document.getElementById("btnChooseSilenceRemover").onclick = async () => {
-  document.getElementById("step-choose-tool").classList.add("hidden");
-  document.getElementById("step-censor-config").classList.remove("hidden");
-  
-  const statusEl = document.getElementById("status");
-  const btn = document.getElementById("startCensoringBtn");
-  btn.classList.add("hidden");
-  statusEl.textContent = "Trimming silence pauses... please wait";
-
-  const form = new FormData();
-  if (selectedFile) form.append("file", selectedFile);
-  if (currentJobId) form.append("job_id_existing", currentJobId);
-
-  try {
-    const res = await fetch(API_BASE + "/api/remove-silence", { method: "POST", body: form });
-    if (!res.ok) throw new Error(await res.text());
-    const data = await res.json();
-
-    currentJobId = data.job_id;
-    showResult(data.audio_url, "Silence Trimmed Successfully", false);
-  } catch (err) {
-    statusEl.textContent = "Error: " + err.message;
-    btn.classList.remove("hidden");
-  }
-};
-
-// Choice 2: Clean Words
-document.getElementById("btnChooseCleanWords").onclick = () => {
-  document.getElementById("step-choose-tool").classList.add("hidden");
-  document.getElementById("step-censor-config").classList.remove("hidden");
-  document.getElementById("startCensoringBtn").classList.remove("hidden");
-  document.getElementById("status").textContent = "";
-};
-
-// Custom Word Badges
-const wordInput = document.getElementById("customWordsInput");
-const addBtn = document.getElementById("addWordBtn");
-const badgeList = document.getElementById("wordBadgeList");
-
-function addWord() {
-  const val = wordInput.value.trim().toLowerCase();
-  if (val && !addedWordsList.includes(val)) {
-    addedWordsList.push(val);
-    renderBadges();
-  }
-  wordInput.value = "";
-  wordInput.focus();
-}
-
-function removeWord(word) {
-  addedWordsList = addedWordsList.filter(w => w !== word);
-  renderBadges();
-}
-
-function renderBadges() {
-  badgeList.innerHTML = addedWordsList.map(w => 
-    `<div class="word-pill">${w} <span onclick="removeWord('${w}')">×</span></div>`
-  ).join("");
-}
-
-addBtn.onclick = addWord;
-wordInput.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") { e.preventDefault(); addWord(); }
-});
-
-document.querySelectorAll(".mode-btn").forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("selected"));
-    btn.classList.add("selected");
-    selectedMode = btn.dataset.mode;
-  };
-});
-
-// Run Censoring
-document.getElementById("startCensoringBtn").onclick = async () => {
-  const statusEl = document.getElementById("status");
-  const btn = document.getElementById("startCensoringBtn");
-  statusEl.textContent = "AI is transcribing & censoring keywords...";
-  btn.disabled = true;
-
-  const form = new FormData();
-  if (currentJobId) {
-    form.append("job_id_existing", currentJobId);
-  } else if (selectedFile) {
-    form.append("file", selectedFile);
-  }
-  form.append("mode", selectedMode);
-  form.append("custom_words", addedWordsList.join(", "));
-
-  try {
-    const res = await fetch(API_BASE + "/api/process", { method: "POST", body: form });
-    if (!res.ok) throw new Error(await res.text());
-    const data = await res.json();
-
-    currentJobId = data.job_id;
-    showResult(data.audio_url, "Words Sanitized Successfully", true, data);
-  } catch (err) {
-    statusEl.textContent = "Error: " + err.message;
-  } finally {
-    btn.disabled = false;
-  }
-};
-
-function showResult(audioUrl, title, isCensored, data = null) {
-  document.getElementById("step-censor-config").classList.add("hidden");
-  document.getElementById("step-result").classList.remove("hidden");
-
-  document.getElementById("resultTitle").textContent = title;
-  const player = document.getElementById("player");
-  player.src = API_BASE + audioUrl;
-
-  const dl = document.getElementById("downloadBtn");
-  dl.href = API_BASE + audioUrl;
-  dl.download = "processed_audio.mp3";
-
-  const nextActionBtn = document.getElementById("cleanThisNextBtn");
-  const transcriptBox = document.getElementById("transcriptBox");
-
-  if (isCensored && data) {
-    nextActionBtn.classList.add("hidden"); // already censored
-    transcriptBox.classList.remove("hidden");
-    transcriptBox.innerHTML = data.transcript.map(w => {
-      const ms = Math.round(w.start * 1000);
-      const isBad = data.censored_words.some(cw => Math.abs(cw.start - ms) < 150);
-      return isBad ? `<span class="bad-word">[MUTED: ${w.word}]</span>` : w.word;
-    }).join(" ");
-  } else {
-    // Silence removed; provide option to clean words in this same trimmed audio
-    nextActionBtn.classList.remove("hidden");
-    transcriptBox.classList.add("hidden");
-  }
-}
-
-// Proceed to clean words on the silence-trimmed audio
-document.getElementById("cleanThisNextBtn").onclick = () => {
-  document.getElementById("step-result").classList.add("hidden");
-  document.getElementById("step-censor-config").classList.remove("hidden");
-  document.getElementById("startCensoringBtn").classList.remove("hidden");
-  document.getElementById("status").textContent = "";
-};
-
-function startOver() {
-  selectedFile = null;
-  currentJobId = null;
-  fileInput.value = "";
-  addedWordsList = [];
-  renderBadges();
-  document.getElementById("step-result").classList.add("hidden");
-  document.getElementById("step-choose-tool").classList.add("hidden");
-  document.getElementById("step-censor-config").classList.add("hidden");
-  document.getElementById("step-upload").classList.remove("hidden");
-}
-</script>
 </body>
 </html>
