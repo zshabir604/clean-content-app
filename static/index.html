@@ -13,38 +13,40 @@
     }
 
     body {
-      background-color: #0d0e12;
+      background-color: #0b0c10;
       background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-      background-size: 30px 30px;
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: 34px 34px;
       color: #ffffff;
-      display: flex;
-      justify-content: center;
       min-height: 100vh;
-      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px 60px;
     }
 
-    .container {
+    .wrapper {
       width: 100%;
-      max-width: 420px;
+      max-width: 680px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    /* Header Bar */
+    /* Top Bar */
     .top-bar {
       width: 100%;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 32px;
+      margin-bottom: 50px;
     }
 
     .logo {
-      font-size: 20px;
+      font-size: 24px;
       font-weight: 700;
+      letter-spacing: -0.5px;
     }
 
     .logo span {
@@ -52,21 +54,23 @@
     }
 
     .badge {
-      border: 1px solid #785210;
+      border: 1px solid rgba(245, 158, 11, 0.35);
       color: #f59e0b;
-      font-size: 11px;
-      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 14px;
       border-radius: 999px;
-      background: rgba(245, 158, 11, 0.05);
+      background: rgba(245, 158, 11, 0.06);
     }
 
-    /* Heading Section */
+    /* Hero Text */
     .hero-title {
       text-align: center;
-      font-size: 26px;
+      font-size: 42px;
       font-weight: 800;
-      line-height: 1.25;
-      margin-bottom: 14px;
+      line-height: 1.2;
+      letter-spacing: -1px;
+      margin-bottom: 18px;
     }
 
     .hero-title .line-1 {
@@ -81,49 +85,49 @@
 
     .hero-desc {
       text-align: center;
-      font-size: 13px;
-      line-height: 1.5;
+      font-size: 16px;
+      line-height: 1.6;
       color: #9ca3af;
-      max-width: 320px;
-      margin: 0 auto 28px;
+      max-width: 520px;
+      margin: 0 auto 40px;
     }
 
-    /* Main Upload Card */
-    .card {
+    /* Full-Size Upload Box */
+    .upload-card {
       width: 100%;
-      background: #13151b;
-      border: 1px solid #1f232e;
-      border-radius: 20px;
-      padding: 28px 18px;
+      background: #12141a;
+      border: 1px solid #222634;
+      border-radius: 24px;
+      padding: 44px 32px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
     }
 
     .icon-box {
-      width: 56px;
-      height: 56px;
+      width: 68px;
+      height: 68px;
       background: #f59e0b;
-      border-radius: 14px;
+      border-radius: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 16px;
-      box-shadow: 0 0 25px rgba(245, 158, 11, 0.45);
+      margin-bottom: 22px;
+      box-shadow: 0 0 35px rgba(245, 158, 11, 0.45);
     }
 
     .card-title {
-      font-size: 16px;
+      font-size: 20px;
       font-weight: 600;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       text-align: center;
     }
 
     .card-subtitle {
-      font-size: 12px;
+      font-size: 14px;
       color: #9ca3af;
-      margin-bottom: 20px;
+      margin-bottom: 28px;
       text-align: center;
     }
 
@@ -131,14 +135,16 @@
       color: #f59e0b;
       text-decoration: underline;
       cursor: pointer;
+      font-weight: 500;
     }
 
-    /* Toggle Option Buttons */
+    /* Option Toggle Buttons */
     .options-group {
       display: flex;
-      gap: 10px;
+      gap: 14px;
       width: 100%;
-      margin-bottom: 16px;
+      max-width: 440px;
+      margin-bottom: 20px;
     }
 
     .option-btn {
@@ -146,30 +152,33 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 10px 8px;
+      gap: 8px;
+      padding: 12px 18px;
       border-radius: 999px;
-      font-size: 12px;
-      background: #181b22;
-      border: 1px solid #282c37;
+      font-size: 14px;
+      font-weight: 500;
+      background: #171922;
+      border: 1px solid #282d3d;
       color: #9ca3af;
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
     .option-btn.active {
-      background: #20242f;
+      background: #1f2330;
       border-color: #f59e0b;
       color: #ffffff;
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.2);
     }
 
-    /* Conditional Add Words Tab */
+    /* Word Censor Section */
     #wordsSection {
       width: 100%;
-      margin-bottom: 16px;
+      max-width: 440px;
+      margin-bottom: 20px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
     }
 
     #wordsSection.hidden {
@@ -177,35 +186,38 @@
     }
 
     .words-label {
-      font-size: 11px;
+      font-size: 13px;
       color: #9ca3af;
     }
 
     .words-input {
       width: 100%;
-      padding: 9px 12px;
-      border-radius: 10px;
-      background: #0d0e12;
-      border: 1px solid #282c37;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: #0b0c10;
+      border: 1px solid #282d3d;
       color: #ffffff;
-      font-size: 12px;
+      font-size: 14px;
       outline: none;
+      transition: border-color 0.2s;
     }
 
     .words-input:focus {
       border-color: #f59e0b;
     }
 
-    /* Info Badge */
-    .size-limit {
+    /* Size Info */
+    .size-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: #1c1f28;
+      background: #1b1e28;
+      border: 1px solid #242836;
       color: #9ca3af;
-      font-size: 11px;
-      padding: 5px 12px;
+      font-size: 12px;
+      padding: 6px 14px;
       border-radius: 999px;
+      margin-top: 6px;
     }
 
     #fileInput {
@@ -215,14 +227,14 @@
 </head>
 <body>
 
-  <div class="container">
-    <!-- Top Header -->
+  <div class="wrapper">
+    <!-- Navbar Header -->
     <div class="top-bar">
       <div class="logo">CleanContent <span>.ai</span></div>
       <div class="badge">v1.1 Multi-Tool</div>
     </div>
 
-    <!-- Main Title -->
+    <!-- Main Title Lines -->
     <h1 class="hero-title">
       <span class="line-1">Smart Audio Suite.</span>
       <span class="line-2">Clean & Cut.</span>
@@ -233,10 +245,10 @@
       Remove awkward pauses with Silence Remover, or sanitize speech & sensitive words with Complete Silence.
     </p>
 
-    <!-- Upload Card -->
-    <div class="card">
+    <!-- Main Card Box -->
+    <div class="upload-card">
       <div class="icon-box">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="#000">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="#0b0c10">
           <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
         </svg>
       </div>
@@ -249,7 +261,7 @@
 
       <input type="file" id="fileInput" accept="audio/*,video/*" />
 
-      <!-- Mode Selector -->
+      <!-- Mode Toggle Buttons -->
       <div class="options-group">
         <button type="button" class="option-btn active" id="btnSilence" onclick="selectTool('silence')">
           ✂️ Silence Remover
@@ -259,13 +271,13 @@
         </button>
       </div>
 
-      <!-- Add Words Tab (Only visible in Clean Audio) -->
+      <!-- Censoring Words Input (Clean Audio Mode Only) -->
       <div id="wordsSection" class="hidden">
-        <label class="words-label" for="badWordsInput">Add words to mute (comma separated):</label>
-        <input type="text" id="badWordsInput" class="words-input" placeholder="e.g. badword, swear, silence" />
+        <label class="words-label" for="badWordsInput">Add words to mute (separated by comma):</label>
+        <input type="text" id="badWordsInput" class="words-input" placeholder="e.g. damn, shoot, pause" />
       </div>
 
-      <div class="size-limit">
+      <div class="size-badge">
         ⏱️ Max 100 MB
       </div>
     </div>
@@ -278,19 +290,16 @@
       const wordsSection = document.getElementById('wordsSection');
 
       if (mode === 'silence') {
-        // Silence Remover active: hide words input
         btnSilence.classList.add('active');
         btnClean.classList.remove('active');
         wordsSection.classList.add('hidden');
       } else if (mode === 'clean') {
-        // Clean Audio active: show words input
         btnClean.classList.add('active');
         btnSilence.classList.remove('active');
         wordsSection.classList.remove('hidden');
       }
     }
 
-    // File selection listener
     document.getElementById('fileInput').addEventListener('change', (e) => {
       if (e.target.files.length > 0) {
         document.querySelector('.card-title').innerText = e.target.files[0].name;
