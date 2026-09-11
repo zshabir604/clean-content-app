@@ -168,7 +168,7 @@
       font-weight: 600;
     }
 
-    /* Mode Selector Buttons */
+    /* Main Tool Selector */
     .options-group {
       display: flex;
       gap: 12px;
@@ -200,32 +200,60 @@
       box-shadow: 0 0 16px rgba(245, 158, 11, 0.2);
     }
 
-    /* Censored Words Tab */
-    #wordsSection {
+    /* Sub-options for Clean Audio (Beep, Silence, Remove) */
+    .clean-config-section {
       width: 100%;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid #222634;
+      border-radius: 16px;
+      padding: 16px;
       margin-bottom: 20px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 14px;
     }
 
-    #wordsSection.hidden {
-      display: none;
-    }
-
-    .words-label {
-      font-size: 13px;
+    .sub-section-title {
+      font-size: 12px;
       color: #9ca3af;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .censor-modes-group {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .mode-sub-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #282d3d;
+      background: #0b0c10;
+      color: #9ca3af;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .mode-sub-btn.selected {
+      border-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.12);
+      color: #f59e0b;
     }
 
     .words-input {
       width: 100%;
-      padding: 13px 16px;
-      border-radius: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
       background: #0b0c10;
       border: 1px solid #282d3d;
       color: #ffffff;
-      font-size: 14px;
+      font-size: 13px;
       outline: none;
       transition: border-color 0.2s;
     }
@@ -398,6 +426,12 @@
     .hidden-input, .hidden {
       display: none !important;
     }
+
+    @media (max-width: 500px) {
+      .censor-modes-group {
+        flex-direction: column;
+      }
+    }
   </style>
 </head>
 <body>
@@ -417,7 +451,7 @@
 
     <!-- Centered Paragraph -->
     <p class="hero-desc">
-      Remove awkward pauses with Silence Remover, or sanitize speech & sensitive words with Complete Silence.
+      Remove awkward pauses with Silence Remover, or sanitize speech & sensitive words with Complete Silence, Beep, or Cut.
     </p>
 
     <!-- Main Card -->
@@ -444,7 +478,7 @@
         </div>
       </label>
 
-      <!-- Mode Selector -->
+      <!-- Main Mode Selector -->
       <div class="options-group">
         <button type="button" class="option-btn active" id="btnSilence" onclick="selectTool('silence')">
           ✂️ Silence Remover
@@ -454,10 +488,27 @@
         </button>
       </div>
 
-      <!-- Add Words (Only in Clean Audio mode) -->
-      <div id="wordsSection" class="hidden">
-        <label class="words-label" for="badWordsInput">Add words to mute (separated by comma):</label>
-        <input type="text" id="badWordsInput" class="words-input" placeholder="e.g. damn, shoot, silence" />
+      <!-- Clean Audio Settings (Modes + Custom Words) -->
+      <div id="cleanConfigSection" class="clean-config-section hidden">
+        <div>
+          <div class="sub-section-title" style="margin-bottom: 8px;">CENSORSHIP METHOD:</div>
+          <div class="censor-modes-group">
+            <button type="button" class="mode-sub-btn selected" data-censor="silence" onclick="setCensorMode('silence')">
+              🔇 Mute Silence
+            </button>
+            <button type="button" class="mode-sub-btn" data-censor="beep" onclick="setCensorMode('beep')">
+              🔊 Beep Tone
+            </button>
+            <button type="button" class="mode-sub-btn" data-censor="remove" onclick="setCensorMode('remove')">
+              ✂️ Cut Word
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div class="sub-section-title" style="margin-bottom: 6px;">ADD CUSTOM WORDS TO MUTE (OPTIONAL):</div>
+          <input type="text" id="badWordsInput" class="words-input" placeholder="e.g. damn, shoot, bakwas (comma-separated)" />
+        </div>
       </div>
 
       <div class="status-msg" id="statusMsg"></div>
@@ -479,7 +530,7 @@
       </div>
     </div>
 
-    <!-- Team Footer: Only Zain Shabir -->
+    <!-- Team Footer: Zain Shabir Only -->
     <footer class="footer">
       <span>Engineered by</span>
       <a href="https://www.linkedin.com/in/zain-shabir-38a345322" target="_blank" rel="noopener noreferrer" class="profile-card">
@@ -499,7 +550,8 @@
 
   <script>
     let currentMode = 'silence';
-    let currentJobId = null; // Stores silence-removed job ID to chain operations
+    let chosenCensorMode = 'silence'; // 'silence', 'beep', or 'remove'
+    let currentJobId = null;
 
     const fileInput = document.getElementById('fileInput');
     const uploadTitle = document.getElementById('uploadTitle');
@@ -510,27 +562,34 @@
     const audioPlayer = document.getElementById('audioPlayer');
     const downloadLink = document.getElementById('downloadLink');
     const transcriptBox = document.getElementById('transcriptBox');
+    const cleanConfigSection = document.getElementById('cleanConfigSection');
 
     function selectTool(mode) {
       currentMode = mode;
       const btnSilence = document.getElementById('btnSilence');
       const btnClean = document.getElementById('btnClean');
-      const wordsSection = document.getElementById('wordsSection');
 
       if (mode === 'silence') {
         btnSilence.classList.add('active');
         btnClean.classList.remove('active');
-        wordsSection.classList.add('hidden');
+        cleanConfigSection.classList.add('hidden');
       } else if (mode === 'clean') {
         btnClean.classList.add('active');
         btnSilence.classList.remove('active');
-        wordsSection.classList.remove('hidden');
+        cleanConfigSection.classList.remove('hidden');
       }
+    }
+
+    function setCensorMode(mode) {
+      chosenCensorMode = mode;
+      document.querySelectorAll('.mode-sub-btn').forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.censor === mode);
+      });
     }
 
     fileInput.addEventListener('change', (e) => {
       if (e.target.files && e.target.files.length > 0) {
-        currentJobId = null; // Reset chaining if user selects a fresh file
+        currentJobId = null;
         uploadTitle.innerText = e.target.files[0].name;
       }
     });
@@ -549,7 +608,7 @@
       dropZone.classList.remove('dragover');
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
         fileInput.files = e.dataTransfer.files;
-        currentJobId = null; // Reset chaining on drag-drop
+        currentJobId = null;
         uploadTitle.innerText = e.dataTransfer.files[0].name;
       }
     });
@@ -562,7 +621,6 @@
 
       const formData = new FormData();
 
-      // Agar pehle se silence remove ho chuka hai, to wahi processed audio chain karein
       if (currentJobId) {
         formData.append("job_id_existing", currentJobId);
       } else {
@@ -579,11 +637,11 @@
         statusMsg.innerText = "Trimming silent pauses... please wait";
       } else {
         endpoint = "/api/process";
-        formData.append("mode", "silence");
+        formData.append("mode", chosenCensorMode);
         formData.append("custom_words", document.getElementById("badWordsInput").value);
         statusMsg.innerText = currentJobId 
-          ? "Cleaning target words from silence-removed audio... please wait" 
-          : "Transcribing & silencing target words... please wait";
+          ? `Applying ${chosenCensorMode} mode on silence-trimmed audio...` 
+          : `Transcribing & applying ${chosenCensorMode} mode...`;
       }
 
       try {
@@ -597,12 +655,10 @@
         }
 
         const data = await response.json();
-        
-        // Save job_id taake agli operation isi file par ho
         currentJobId = data.job_id;
 
         statusMsg.innerText = "Completed in " + data.elapsed_seconds + "s! " + 
-          (currentMode === 'silence' ? "(You can now click 'Clean Audio' to sanitize this trimmed file)" : "");
+          (currentMode === 'silence' ? "(You can now switch to 'Clean Audio' to sanitize this audio)" : "");
         
         audioPlayer.src = data.audio_url;
         downloadLink.href = data.audio_url;
@@ -612,7 +668,7 @@
           transcriptBox.innerHTML = data.transcript.map(w => {
             const ms = Math.round(w.start * 1000);
             const isBad = data.censored_words.some(cw => Math.abs(cw.start - ms) < 150);
-            return isBad ? `<span class="bad-word">[MUTED: ${w.word}]</span>` : w.word;
+            return isBad ? `<span class="bad-word">[${chosenCensorMode.toUpperCase()}: ${w.word}]</span>` : w.word;
           }).join(" ");
         }
 
