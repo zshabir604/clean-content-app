@@ -329,6 +329,7 @@
       color: #9ca3af;
       margin-bottom: 12px;
       min-height: 18px;
+      text-align: center;
     }
 
     .size-badge {
@@ -498,6 +499,8 @@
 
   <script>
     let currentMode = 'silence';
+    let currentJobId = null; // Stores silence-removed job ID to chain operations
+
     const fileInput = document.getElementById('fileInput');
     const uploadTitle = document.getElementById('uploadTitle');
     const dropZone = document.getElementById('dropZone');
@@ -527,6 +530,7 @@
 
     fileInput.addEventListener('change', (e) => {
       if (e.target.files && e.target.files.length > 0) {
+        currentJobId = null; // Reset chaining if user selects a fresh file
         uploadTitle.innerText = e.target.files[0].name;
       }
     });
@@ -545,19 +549,25 @@
       dropZone.classList.remove('dragover');
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
         fileInput.files = e.dataTransfer.files;
+        currentJobId = null; // Reset chaining on drag-drop
         uploadTitle.innerText = e.dataTransfer.files[0].name;
       }
     });
 
     async function startProcessing() {
-      if (!fileInput.files || !fileInput.files.length) {
+      if (!currentJobId && (!fileInput.files || !fileInput.files.length)) {
         alert('Please select an audio/video file first!');
         return;
       }
 
-      const file = fileInput.files[0];
       const formData = new FormData();
-      formData.append("file", file);
+
+      // Agar pehle se silence remove ho chuka hai, to wahi processed audio chain karein
+      if (currentJobId) {
+        formData.append("job_id_existing", currentJobId);
+      } else {
+        formData.append("file", fileInput.files[0]);
+      }
 
       processBtn.disabled = true;
       resultBox.classList.add("hidden");
@@ -571,7 +581,9 @@
         endpoint = "/api/process";
         formData.append("mode", "silence");
         formData.append("custom_words", document.getElementById("badWordsInput").value);
-        statusMsg.innerText = "Transcribing & silencing target words... please wait";
+        statusMsg.innerText = currentJobId 
+          ? "Cleaning target words from silence-removed audio... please wait" 
+          : "Transcribing & silencing target words... please wait";
       }
 
       try {
@@ -585,7 +597,12 @@
         }
 
         const data = await response.json();
-        statusMsg.innerText = "Processing completed in " + data.elapsed_seconds + "s!";
+        
+        // Save job_id taake agli operation isi file par ho
+        currentJobId = data.job_id;
+
+        statusMsg.innerText = "Completed in " + data.elapsed_seconds + "s! " + 
+          (currentMode === 'silence' ? "(You can now click 'Clean Audio' to sanitize this trimmed file)" : "");
         
         audioPlayer.src = data.audio_url;
         downloadLink.href = data.audio_url;
