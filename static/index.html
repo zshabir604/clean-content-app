@@ -23,13 +23,13 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 20px 30px;
+      padding: 30px 18px 24px;
       overflow-x: hidden;
     }
 
     .wrapper {
       width: 100%;
-      max-width: 680px;
+      max-width: 480px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -42,12 +42,12 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 30px;
+      margin-bottom: 24px;
     }
 
     .logo {
-      font-size: 24px;
-      font-weight: 700;
+      font-size: 22px;
+      font-weight: 800;
       letter-spacing: -0.5px;
     }
 
@@ -58,9 +58,9 @@
     .badge {
       border: 1px solid rgba(245, 158, 11, 0.35);
       color: #f59e0b;
-      font-size: 13px;
-      font-weight: 500;
-      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
       border-radius: 999px;
       background: rgba(245, 158, 11, 0.06);
     }
@@ -71,29 +71,29 @@
       background: #12141a;
       border: 1px solid #222634;
       border-radius: 24px;
-      padding: 32px 24px;
+      padding: 24px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
       position: relative;
     }
 
-    /* Upload Zone */
+    /* Upload Zone Drop Label */
     .upload-zone {
       width: 100%;
       background: #151821;
       border: 2px dashed #2f3547;
       border-radius: 18px;
-      padding: 40px 20px;
+      padding: 36px 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       user-select: none;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      margin-bottom: 18px;
     }
 
     .upload-zone:hover,
@@ -118,12 +118,12 @@
     }
 
     .upload-zone:hover .icon-box {
-      transform: scale(1.08);
+      transform: scale(1.06);
     }
 
     .card-title {
-      font-size: 19px;
-      font-weight: 600;
+      font-size: 18px;
+      font-weight: 700;
       margin-bottom: 8px;
       text-align: center;
       pointer-events: none;
@@ -142,18 +142,18 @@
       font-weight: 600;
     }
 
-    /* Active File Pill Box */
+    /* File Name Box */
     .file-badge-box {
       display: flex;
       align-items: center;
       gap: 10px;
       background: rgba(245, 158, 11, 0.08);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      padding: 10px 18px;
-      border-radius: 12px;
-      margin-bottom: 20px;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      padding: 10px 16px;
+      border-radius: 14px;
+      margin-bottom: 18px;
       width: 100%;
-      animation: fadeInSlide 0.4s ease forwards;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .file-badge-box svg {
@@ -171,75 +171,106 @@
       flex: 1;
     }
 
-    /* Tools Options Switch */
-    .options-group {
-      display: flex;
-      gap: 12px;
+    /* Slide Switch Stage */
+    .buttons-track {
+      position: relative;
       width: 100%;
-      margin-bottom: 20px;
-      transition: all 0.4s ease;
+      height: 52px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 10px;
     }
 
-    .option-btn {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 14px 12px;
+    .tab-btn {
+      position: absolute;
+      top: 0;
+      width: calc(50% - 5px);
+      height: 52px;
       border-radius: 999px;
       font-size: 14px;
       font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
       background: #171922;
       border: 1px solid #282d3d;
       color: #9ca3af;
-      cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1;
     }
 
-    .option-btn:hover {
-      border-color: rgba(245, 158, 11, 0.5);
-      color: #fff;
+    #btnSilence {
+      left: 0;
     }
 
-    .option-btn.active {
+    #btnClean {
+      right: 0;
+    }
+
+    /* SLIDE ANIMATION CLASSES */
+    /* When Silence is clicked: it slides right over Clean, Clean vanishes */
+    .slide-silence-active #btnSilence {
+      left: 0;
+      width: 100%;
       background: #1f2330;
       border-color: #f59e0b;
       color: #ffffff;
-      box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
-      transform: translateY(-1px);
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+      z-index: 2;
+    }
+    .slide-silence-active #btnClean {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.85);
     }
 
-    /* Clean Audio Config Dropdown */
-    .clean-config-section {
+    /* When Clean is clicked: it slides left over Silence, Silence vanishes */
+    .slide-clean-active #btnClean {
+      right: 0;
+      width: 100%;
+      background: #1f2330;
+      border-color: #f59e0b;
+      color: #ffffff;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+      z-index: 2;
+    }
+    .slide-clean-active #btnSilence {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.85);
+    }
+
+    /* Clean Audio Step 2 Options */
+    .clean-options-container {
       width: 100%;
       background: rgba(255, 255, 255, 0.02);
       border: 1px solid #222634;
       border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 20px;
+      padding: 16px;
+      margin-bottom: 16px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      animation: slideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      gap: 12px;
+      animation: slideInDown 0.35s ease forwards;
     }
 
-    .sub-section-title {
+    .options-label {
       font-size: 11px;
-      color: #9ca3af;
       font-weight: 700;
-      letter-spacing: 0.06em;
+      color: #9ca3af;
+      letter-spacing: 0.05em;
     }
 
-    .censor-modes-group {
+    .censor-modes {
       display: flex;
       gap: 8px;
-      width: 100%;
     }
 
-    .mode-sub-btn {
+    .sub-mode-pill {
       flex: 1;
-      padding: 10px 8px;
+      padding: 10px 4px;
       border-radius: 10px;
       border: 1px solid #282d3d;
       background: #0b0c10;
@@ -251,9 +282,9 @@
       text-align: center;
     }
 
-    .mode-sub-btn.selected {
+    .sub-mode-pill.selected {
       border-color: #f59e0b;
-      background: rgba(245, 158, 11, 0.12);
+      background: rgba(245, 158, 11, 0.14);
       color: #f59e0b;
     }
 
@@ -273,13 +304,42 @@
       border-color: #f59e0b;
     }
 
-    /* Wave Equalizer Animation */
-    .processing-wave-box {
+    /* Process Clean Audio Action Button */
+    .process-clean-btn {
+      width: 100%;
+      background: #f59e0b;
+      color: #000000;
+      border: none;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+      animation: popIn 0.3s ease;
+    }
+
+    .process-clean-btn:hover {
+      background: #d97706;
+    }
+
+    .process-clean-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Equalizer Wave Bars Animation */
+    .wave-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 12px;
-      margin: 15px 0 20px;
+      margin: 14px 0 16px;
       animation: fadeIn 0.3s ease;
     }
 
@@ -290,69 +350,36 @@
       height: 38px;
     }
 
-    .wave-bar {
+    .bar {
       width: 5px;
       height: 8px;
       background: #f59e0b;
       border-radius: 99px;
-      animation: pulseWave 1s ease-in-out infinite alternate;
+      animation: waveMove 1s ease-in-out infinite alternate;
     }
 
-    .wave-bar:nth-child(1) { animation-delay: 0.1s; }
-    .wave-bar:nth-child(2) { animation-delay: 0.25s; }
-    .wave-bar:nth-child(3) { animation-delay: 0.4s; }
-    .wave-bar:nth-child(4) { animation-delay: 0.2s; }
-    .wave-bar:nth-child(5) { animation-delay: 0.5s; }
-    .wave-bar:nth-child(6) { animation-delay: 0.3s; }
+    .bar:nth-child(1) { animation-delay: 0.1s; }
+    .bar:nth-child(2) { animation-delay: 0.25s; }
+    .bar:nth-child(3) { animation-delay: 0.45s; }
+    .bar:nth-child(4) { animation-delay: 0.2s; }
+    .bar:nth-child(5) { animation-delay: 0.5s; }
+    .bar:nth-child(6) { animation-delay: 0.35s; }
 
-    @keyframes pulseWave {
+    @keyframes waveMove {
       0% { height: 8px; opacity: 0.4; }
-      100% { height: 36px; opacity: 1; box-shadow: 0 0 12px rgba(245, 158, 11, 0.6); }
-    }
-
-    /* Process Button */
-    .process-btn {
-      width: 100%;
-      background: #f59e0b;
-      color: #000000;
-      border: none;
-      font-size: 15px;
-      font-weight: 700;
-      padding: 15px;
-      border-radius: 14px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.25);
-    }
-
-    .process-btn:hover {
-      background: #d97706;
-      box-shadow: 0 6px 24px rgba(245, 158, 11, 0.4);
-    }
-
-    .process-btn:active {
-      transform: scale(0.99);
-    }
-
-    .process-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+      100% { height: 38px; opacity: 1; box-shadow: 0 0 12px rgba(245, 158, 11, 0.7); }
     }
 
     /* Result Stage Card */
     .result-box {
       width: 100%;
-      margin-top: 24px;
-      padding-top: 24px;
+      margin-top: 18px;
+      padding-top: 20px;
       border-top: 1px solid #222634;
       display: flex;
       flex-direction: column;
       align-items: center;
-      animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: slideInDown 0.4s ease forwards;
     }
 
     audio {
@@ -361,7 +388,7 @@
       outline: none;
     }
 
-    .download-link {
+    .download-btn {
       width: 100%;
       background: #10b981;
       color: #000;
@@ -376,35 +403,33 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.25);
-      margin-bottom: 16px;
+      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.3);
+      margin-bottom: 14px;
     }
 
-    .download-link:hover {
+    .download-btn:hover {
       background: #059669;
-      transform: translateY(-1px);
     }
 
-    .secondary-clean-card {
+    .clean-prompt-tab {
       width: 100%;
-      background: rgba(245, 158, 11, 0.04);
-      border: 1px dashed rgba(245, 158, 11, 0.3);
+      background: rgba(245, 158, 11, 0.05);
+      border: 1.5px dashed rgba(245, 158, 11, 0.35);
       border-radius: 14px;
       padding: 14px;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s ease;
-      margin-top: 6px;
     }
 
-    .secondary-clean-card:hover {
-      background: rgba(245, 158, 11, 0.08);
+    .clean-prompt-tab:hover {
+      background: rgba(245, 158, 11, 0.1);
       border-color: #f59e0b;
     }
 
     .transcript-box {
       width: 100%;
-      max-height: 140px;
+      max-height: 130px;
       overflow-y: auto;
       background: #0b0c10;
       border: 1px solid #242836;
@@ -449,11 +474,11 @@
     /* Footer */
     .footer {
       width: 100%;
-      margin-top: 36px;
+      margin-top: 30px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       font-size: 13px;
       color: #9ca3af;
     }
@@ -497,14 +522,13 @@
       margin-left: 2px;
     }
 
-    /* Keyframes */
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-12px); }
+    @keyframes slideInDown {
+      from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes fadeInSlide {
-      from { opacity: 0; transform: scale(0.97); }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
     }
 
@@ -514,32 +538,31 @@
 <body>
 
   <div class="wrapper">
-    <!-- Navbar Header -->
+    <!-- Navbar -->
     <div class="top-bar">
       <div class="logo">CleanContent <span>.ai</span></div>
       <div class="badge">v1.1 Multi-Tool</div>
     </div>
 
-    <!-- Main Card -->
+    <!-- Main App Card -->
     <div class="main-card">
       
-      <!-- Native Hidden File Input -->
       <input type="file" id="fileInput" class="hidden" accept="*/*" />
 
-      <!-- Upload Zone Drop Label -->
+      <!-- Drag & Drop Label -->
       <label for="fileInput" class="upload-zone" id="dropZone">
         <div class="icon-box">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="#0b0c10">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="#0b0c10">
             <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
           </svg>
         </div>
-        <div class="card-title" id="uploadTitle">Select or drop your audio clip</div>
+        <div class="card-title">Select or drop your audio clip</div>
         <div class="card-subtitle">
           MP3, WAV, M4A, AAC supported. <span class="browse-link">Browse files</span>
         </div>
       </label>
 
-      <!-- Active File Loaded Badge -->
+      <!-- File Name Pill Display -->
       <div class="file-badge-box hidden" id="fileBadgeBox">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M9 18V5l12-2v13"></path>
@@ -549,66 +572,65 @@
         <span class="file-name-text" id="fileNameDisplay">Audio selected</span>
       </div>
 
-      <!-- Main Mode Selector Group -->
-      <div class="options-group" id="mainToolsGroup">
-        <button type="button" class="option-btn active" id="btnSilence" onclick="selectTool('silence')">
+      <!-- Sliding Dual Action Buttons -->
+      <div class="buttons-track" id="buttonsTrack">
+        <button type="button" class="tab-btn" id="btnSilence" onclick="triggerSilenceRemover()">
           ✂️ Silence Remover
         </button>
-        <button type="button" class="option-btn" id="btnClean" onclick="selectTool('clean')">
+        <button type="button" class="tab-btn" id="btnClean" onclick="triggerCleanAudio()">
           🔇 Clean Audio
         </button>
       </div>
 
-      <!-- Clean Audio Specific Sub-Settings -->
-      <div id="cleanConfigSection" class="clean-config-section hidden">
+      <!-- Clean Audio Configuration (Only shown in Clean Audio mode) -->
+      <div id="cleanConfigSection" class="clean-options-container hidden">
         <div>
-          <div class="sub-section-title" style="margin-bottom: 8px;">CENSORSHIP METHOD:</div>
-          <div class="censor-modes-group">
-            <button type="button" class="mode-sub-btn selected" data-censor="silence" onclick="setCensorMode('silence')">
+          <div class="options-label" style="margin-bottom: 8px;">CENSORSHIP METHOD:</div>
+          <div class="censor-modes">
+            <button type="button" class="sub-mode-pill selected" data-censor="silence" onclick="setCensorMode('silence')">
               🔇 Mute Silence
             </button>
-            <button type="button" class="mode-sub-btn" data-censor="beep" onclick="setCensorMode('beep')">
+            <button type="button" class="sub-mode-pill" data-censor="beep" onclick="setCensorMode('beep')">
               🔊 Beep Tone
             </button>
-            <button type="button" class="mode-sub-btn" data-censor="remove" onclick="setCensorMode('remove')">
+            <button type="button" class="sub-mode-pill" data-censor="remove" onclick="setCensorMode('remove')">
               ✂️ Cut Word
             </button>
           </div>
         </div>
 
         <div>
-          <div class="sub-section-title" style="margin-bottom: 6px;">ADD CUSTOM WORDS TO MUTE (OPTIONAL):</div>
+          <div class="options-label" style="margin-bottom: 6px;">ADD CUSTOM WORDS TO MUTE (OPTIONAL):</div>
           <input type="text" id="badWordsInput" class="words-input" placeholder="e.g. damn, shoot, bakwas (comma-separated)" />
         </div>
+
+        <button type="button" class="process-clean-btn" id="processCleanBtn" onclick="runCleanAudioProcessing()">
+          ⚡ Process Clean Audio
+        </button>
       </div>
 
-      <!-- Processing Audio Waves Animation -->
-      <div class="processing-wave-box hidden" id="waveAnimation">
+      <!-- Processing Dynamic Equalizer Bars Animation -->
+      <div class="wave-wrapper hidden" id="waveAnimation">
         <div class="wave-bars">
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
         </div>
-        <span style="font-size: 12px; color: #f59e0b; font-weight: 600;">AI Engine Processing...</span>
+        <span style="font-size: 12px; color: #f59e0b; font-weight: 600;" id="waveStatusText">Processing Audio...</span>
       </div>
-
-      <!-- Action Button -->
-      <button type="button" class="process-btn" id="processBtn" onclick="startProcessing()">
-        ⚡ Process Audio
-      </button>
 
       <div class="status-msg" id="statusMsg"></div>
 
-      <!-- Result Section (Player -> Download -> Clean Option) -->
+      <!-- Result Stage Card (Player -> Download -> Clean Prompt) -->
       <div class="result-box hidden" id="resultBox">
         <audio id="audioPlayer" controls></audio>
         
         <div class="transcript-box hidden" id="transcriptBox"></div>
 
-        <a id="downloadLink" class="download-link" download="processed_audio.mp3">
+        <a id="downloadBtn" class="download-btn" download="cleaned_audio.mp3">
           <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="7 10 12 15 17 10"></polyline>
@@ -617,10 +639,10 @@
           Download Processed Audio
         </a>
 
-        <!-- Follow-up prompt to clean words on the trimmed file -->
-        <div class="secondary-clean-card hidden" id="followUpCleanTab" onclick="switchToCensorAfterSilence()">
+        <!-- Clean words prompt for silence-trimmed audio -->
+        <div class="clean-prompt-tab hidden" id="followUpCleanTab" onclick="triggerCleanAudioAfterSilence()">
           <div style="font-size: 13px; font-weight: 700; color: #f59e0b;">🔇 Want to censor words in this trimmed audio?</div>
-          <div style="font-size: 11px; color: #9ca3af; margin-top: 3px;">Click to open censorship options for this file</div>
+          <div style="font-size: 11px; color: #9ca3af; margin-top: 3px;">Click to apply Beep / Mute / Cut on this file</div>
         </div>
       </div>
 
@@ -629,7 +651,7 @@
       </div>
     </div>
 
-    <!-- Single Profile Footer (Zain Shabir) -->
+    <!-- Developer Footer -->
     <footer class="footer">
       <span>Engineered by</span>
       <a href="https://www.linkedin.com/in/zain-shabir-38a345322" target="_blank" rel="noopener noreferrer" class="profile-card">
@@ -648,7 +670,6 @@
   </div>
 
   <script>
-    let currentMode = 'silence';
     let chosenCensorMode = 'silence';
     let currentJobId = null;
 
@@ -656,50 +677,32 @@
     const dropZone = document.getElementById('dropZone');
     const fileBadgeBox = document.getElementById('fileBadgeBox');
     const fileNameDisplay = document.getElementById('fileNameDisplay');
-    const statusMsg = document.getElementById('statusMsg');
-    const processBtn = document.getElementById('processBtn');
-    const waveAnimation = document.getElementById('waveAnimation');
-    const resultBox = document.getElementById('resultBox');
-    const audioPlayer = document.getElementById('audioPlayer');
-    const downloadLink = document.getElementById('downloadLink');
-    const transcriptBox = document.getElementById('transcriptBox');
-    const cleanConfigSection = document.getElementById('cleanConfigSection');
-    const followUpCleanTab = document.getElementById('followUpCleanTab');
+    const buttonsTrack = document.getElementById('buttonsTrack');
     const btnSilence = document.getElementById('btnSilence');
     const btnClean = document.getElementById('btnClean');
+    const cleanConfigSection = document.getElementById('cleanConfigSection');
+    const waveAnimation = document.getElementById('waveAnimation');
+    const waveStatusText = document.getElementById('waveStatusText');
+    const statusMsg = document.getElementById('statusMsg');
+    const resultBox = document.getElementById('resultBox');
+    const audioPlayer = document.getElementById('audioPlayer');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const transcriptBox = document.getElementById('transcriptBox');
+    const followUpCleanTab = document.getElementById('followUpCleanTab');
+    const processCleanBtn = document.getElementById('processCleanBtn');
 
-    function selectTool(mode) {
-      currentMode = mode;
-      if (mode === 'silence') {
-        btnSilence.classList.add('active');
-        btnClean.classList.remove('active');
-        cleanConfigSection.classList.add('hidden');
-      } else if (mode === 'clean') {
-        btnClean.classList.add('active');
-        btnSilence.classList.remove('active');
-        cleanConfigSection.classList.remove('hidden');
-      }
-    }
-
-    function setCensorMode(mode) {
-      chosenCensorMode = mode;
-      document.querySelectorAll('.mode-sub-btn').forEach(btn => {
-        btn.classList.toggle('selected', btn.dataset.censor === mode);
-      });
-    }
-
-    function handleSelectedFile(file) {
+    function handleFile(file) {
       currentJobId = null;
       fileNameDisplay.textContent = file.name;
       fileBadgeBox.classList.remove('hidden');
       resultBox.classList.add('hidden');
+      cleanConfigSection.classList.add('hidden');
+      buttonsTrack.className = "buttons-track"; // reset slide track
       statusMsg.innerText = "";
     }
 
     fileInput.addEventListener('change', (e) => {
-      if (e.target.files && e.target.files.length > 0) {
-        handleSelectedFile(e.target.files[0]);
-      }
+      if (e.target.files && e.target.files.length > 0) handleFile(e.target.files[0]);
     });
 
     dropZone.addEventListener('dragover', (e) => {
@@ -716,21 +719,58 @@
       dropZone.classList.remove('dragover');
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
         fileInput.files = e.dataTransfer.files;
-        handleSelectedFile(e.dataTransfer.files[0]);
+        handleFile(e.dataTransfer.files[0]);
       }
     });
 
-    function switchToCensorAfterSilence() {
-      selectTool('clean');
-      cleanConfigSection.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    async function startProcessing() {
+    // 1. Click Silence Remover: Slides over Clean Audio and starts immediately
+    function triggerSilenceRemover() {
       if (!currentJobId && (!fileInput.files || !fileInput.files.length)) {
         alert('Please select an audio/video file first!');
         return;
       }
 
+      buttonsTrack.className = "buttons-track slide-silence-active";
+      cleanConfigSection.classList.add('hidden');
+
+      // Direct silence processing without extra process button
+      executeBackendRequest('/api/remove-silence', null, "Trimming silent dead-air pauses...");
+    }
+
+    // 2. Click Clean Audio: Slides over Silence Remover and reveals Clean options + Process Button
+    function triggerCleanAudio() {
+      if (!currentJobId && (!fileInput.files || !fileInput.files.length)) {
+        alert('Please select an audio/video file first!');
+        return;
+      }
+
+      buttonsTrack.className = "buttons-track slide-clean-active";
+      cleanConfigSection.classList.remove('hidden');
+      resultBox.classList.add('hidden');
+    }
+
+    function setCensorMode(mode) {
+      chosenCensorMode = mode;
+      document.querySelectorAll('.sub-mode-pill').forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.censor === mode);
+      });
+    }
+
+    // 3. Process button inside Clean Audio mode
+    function runCleanAudioProcessing() {
+      const extraFormData = {
+        mode: chosenCensorMode,
+        custom_words: document.getElementById('badWordsInput').value
+      };
+      executeBackendRequest('/api/process', extraFormData, "Transcribing & censoring target words...");
+    }
+
+    function triggerCleanAudioAfterSilence() {
+      triggerCleanAudio();
+      cleanConfigSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function executeBackendRequest(endpoint, extraData, loadingText) {
       const formData = new FormData();
       if (currentJobId) {
         formData.append("job_id_existing", currentJobId);
@@ -738,22 +778,19 @@
         formData.append("file", fileInput.files[0]);
       }
 
-      processBtn.disabled = true;
-      waveAnimation.classList.remove("hidden");
-      resultBox.classList.add("hidden");
-      transcriptBox.classList.add("hidden");
-      statusMsg.innerText = "";
-
-      let endpoint = "";
-      if (currentMode === 'silence') {
-        endpoint = "/api/remove-silence";
-        statusMsg.innerText = "Trimming silent dead-air pauses...";
-      } else {
-        endpoint = "/api/process";
-        formData.append("mode", chosenCensorMode);
-        formData.append("custom_words", document.getElementById("badWordsInput").value);
-        statusMsg.innerText = "Transcribing & censoring target words...";
+      if (extraData) {
+        formData.append("mode", extraData.mode);
+        formData.append("custom_words", extraData.custom_words);
       }
+
+      waveStatusText.innerText = loadingText;
+      waveAnimation.classList.remove('hidden');
+      resultBox.classList.add('hidden');
+      transcriptBox.classList.add('hidden');
+      statusMsg.innerText = "";
+      btnSilence.disabled = true;
+      btnClean.disabled = true;
+      processCleanBtn.disabled = true;
 
       try {
         const response = await fetch(endpoint, {
@@ -767,29 +804,31 @@
         currentJobId = data.job_id;
 
         audioPlayer.src = data.audio_url;
-        downloadLink.href = data.audio_url;
+        downloadBtn.href = data.audio_url;
 
-        // Transcript display if clean mode was used
+        // Transcript handling
         if (data.transcript && data.censored_words) {
-          transcriptBox.classList.remove("hidden");
+          transcriptBox.classList.remove('hidden');
           transcriptBox.innerHTML = data.transcript.map(w => {
             const ms = Math.round(w.start * 1000);
             const isBad = data.censored_words.some(cw => Math.abs(cw.start - ms) < 150);
             return isBad ? `<span class="bad-word">[${chosenCensorMode.toUpperCase()}: ${w.word}]</span>` : w.word;
           }).join(" ");
-          followUpCleanTab.classList.add("hidden");
+          followUpCleanTab.classList.add('hidden');
         } else {
-          // If silence remover was used, show prompt to clean this same audio
-          followUpCleanTab.classList.remove("hidden");
+          // If silence remover was triggered, show prompt to clean words
+          followUpCleanTab.classList.remove('hidden');
         }
 
         statusMsg.innerText = `Done in ${data.elapsed_seconds}s!`;
-        resultBox.classList.remove("hidden");
+        resultBox.classList.remove('hidden');
       } catch (err) {
         statusMsg.innerText = "Error: " + err.message;
       } finally {
-        waveAnimation.classList.add("hidden");
-        processBtn.disabled = false;
+        waveAnimation.classList.add('hidden');
+        btnSilence.disabled = false;
+        btnClean.disabled = false;
+        processCleanBtn.disabled = false;
       }
     }
   </script>
