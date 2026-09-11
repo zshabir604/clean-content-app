@@ -106,7 +106,7 @@
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
     }
 
-    /* 100% Clickable Upload Dropzone Label */
+    /* Upload Dropzone Label */
     .upload-zone {
       width: 100%;
       background: #151821;
@@ -261,7 +261,76 @@
       transform: scale(0.99);
     }
 
-    /* Size Indicator */
+    .process-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Result Section */
+    .result-box {
+      width: 100%;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #222634;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    audio {
+      width: 100%;
+      margin: 16px 0;
+      border-radius: 8px;
+    }
+
+    .download-link {
+      width: 100%;
+      background: #10b981;
+      color: #000;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 12px;
+      border-radius: 10px;
+      text-align: center;
+      transition: background 0.2s;
+      margin-bottom: 10px;
+    }
+
+    .download-link:hover {
+      background: #059669;
+    }
+
+    .transcript-box {
+      width: 100%;
+      max-height: 140px;
+      overflow-y: auto;
+      background: #0b0c10;
+      border: 1px solid #242836;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #d1d5db;
+      text-align: left;
+      margin-bottom: 14px;
+    }
+
+    .bad-word {
+      color: #f59e0b;
+      font-weight: 700;
+      background: rgba(245, 158, 11, 0.15);
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+
+    .status-msg {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 12px;
+      min-height: 18px;
+    }
+
     .size-badge {
       display: inline-flex;
       align-items: center;
@@ -276,33 +345,64 @@
 
     /* Profile Footer */
     .footer {
+      width: 100%;
       margin-top: 36px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
+      gap: 14px;
       font-size: 13px;
       color: #9ca3af;
     }
 
-    .profile-link {
+    .team-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .profile-card {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      color: #f59e0b;
+      gap: 10px;
+      background: #12141a;
+      border: 1px solid #222634;
+      padding: 8px 16px;
+      border-radius: 999px;
       text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .profile-card:hover {
+      border-color: #f59e0b;
+      background: #181d29;
+      transform: translateY(-2px);
+    }
+
+    .avatar-img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid #f59e0b;
+    }
+
+    .profile-name {
+      color: #ffffff;
       font-weight: 600;
-      transition: color 0.2s ease;
+      font-size: 13px;
     }
 
-    .profile-link:hover {
-      color: #fbbf24;
-      text-decoration: underline;
+    .profile-role {
+      color: #f59e0b;
+      font-size: 11px;
+      font-weight: 500;
+      margin-left: 2px;
     }
 
-    /* Hidden native file input */
-    .hidden-input {
-      display: none;
+    .hidden-input, .hidden {
+      display: none !important;
     }
   </style>
 </head>
@@ -329,15 +429,15 @@
     <!-- Main Card -->
     <div class="main-card">
       
-      <!-- Native file input with full audio/video MIME types and file extensions -->
+      <!-- Native file input -->
       <input 
         type="file" 
         id="fileInput" 
         class="hidden-input" 
-        accept=".mp3,.wav,.m4a,.aac,.ogg,.flac,.mp4,.mov,.mkv,audio/*,video/*" 
+        accept="*/*" 
       />
 
-      <!-- Entire area is an HTML <label> linked directly to the file input -->
+      <!-- Dropzone Label -->
       <label for="fileInput" class="upload-zone" id="dropZone">
         <div class="icon-box">
           <svg width="42" height="42" viewBox="0 0 24 24" fill="#0b0c10">
@@ -346,7 +446,7 @@
         </div>
         <div class="card-title" id="uploadTitle">Select or drop your audio clip</div>
         <div class="card-subtitle">
-          MP3, WAV, M4A, MP4 supported. <span class="browse-link">Browse files</span>
+          MP3, WAV, M4A, AAC supported. <span class="browse-link">Browse files</span>
         </div>
       </label>
 
@@ -360,31 +460,63 @@
         </button>
       </div>
 
-      <!-- Add Words (Only appears in Clean Audio mode) -->
+      <!-- Add Words (Only in Clean Audio mode) -->
       <div id="wordsSection" class="hidden">
         <label class="words-label" for="badWordsInput">Add words to mute (separated by comma):</label>
         <input type="text" id="badWordsInput" class="words-input" placeholder="e.g. damn, shoot, silence" />
       </div>
 
+      <div class="status-msg" id="statusMsg"></div>
+
       <!-- Process Action Button -->
-      <button type="button" class="process-btn" onclick="startProcessing()">
+      <button type="button" class="process-btn" id="processBtn" onclick="startProcessing()">
         ⚡ Process Audio
       </button>
+
+      <!-- Result Audio & Download Box -->
+      <div class="result-box hidden" id="resultBox">
+        <audio id="audioPlayer" controls></audio>
+        <div class="transcript-box hidden" id="transcriptBox"></div>
+        <a id="downloadLink" class="download-link" download="cleaned_audio.mp3">Download Processed Audio</a>
+      </div>
 
       <div class="size-badge">
         ⏱️ Max 100 MB
       </div>
     </div>
 
-    <!-- LinkedIn Footer Profile -->
+    <!-- Team Footer with Profile Photo & LinkedIn -->
     <footer class="footer">
-      <span>Developed by</span>
-      <a href="https://www.linkedin.com/in/zainshabir" target="_blank" rel="noopener noreferrer" class="profile-link">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
-        </svg>
-        Zain Shabir
-      </a>
+      <span>Engineered & Designed by</span>
+      <div class="team-links">
+        <!-- Zain Shabir -->
+        <a href="https://www.linkedin.com/in/zain-shabir-38a345322" target="_blank" rel="noopener noreferrer" class="profile-card">
+          <img 
+            src="/static/zain.jpg" 
+            alt="Zain Shabir" 
+            class="avatar-img" 
+            onerror="this.src='https://ui-avatars.com/api/?name=Zain+Shabir&background=f59e0b&color=000'" 
+          />
+          <div>
+            <span class="profile-name">Zain Shabir</span>
+            <span class="profile-role">(Developer)</span>
+          </div>
+        </a>
+
+        <!-- Bilal -->
+        <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer" class="profile-card">
+          <img 
+            src="/static/bilal.jpg" 
+            alt="Bilal" 
+            class="avatar-img" 
+            onerror="this.src='https://ui-avatars.com/api/?name=Bilal&background=282d3d&color=fff'" 
+          />
+          <div>
+            <span class="profile-name">Bilal</span>
+            <span class="profile-role">(Designer)</span>
+          </div>
+        </a>
+      </div>
     </footer>
   </div>
 
@@ -393,6 +525,12 @@
     const fileInput = document.getElementById('fileInput');
     const uploadTitle = document.getElementById('uploadTitle');
     const dropZone = document.getElementById('dropZone');
+    const statusMsg = document.getElementById('statusMsg');
+    const processBtn = document.getElementById('processBtn');
+    const resultBox = document.getElementById('resultBox');
+    const audioPlayer = document.getElementById('audioPlayer');
+    const downloadLink = document.getElementById('downloadLink');
+    const transcriptBox = document.getElementById('transcriptBox');
 
     function selectTool(mode) {
       currentMode = mode;
@@ -411,14 +549,12 @@
       }
     }
 
-    // Update display text on selecting file
     fileInput.addEventListener('change', (e) => {
       if (e.target.files && e.target.files.length > 0) {
         uploadTitle.innerText = e.target.files[0].name;
       }
     });
 
-    // Drag & Drop visual feedback
     dropZone.addEventListener('dragover', (e) => {
       e.preventDefault();
       dropZone.classList.add('dragover');
@@ -437,12 +573,62 @@
       }
     });
 
-    function startProcessing() {
+    async function startProcessing() {
       if (!fileInput.files || !fileInput.files.length) {
         alert('Please select an audio/video file first!');
         return;
       }
-      alert(`Processing started!\nFile: ${fileInput.files[0].name}\nMode: ${currentMode}`);
+
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+
+      processBtn.disabled = true;
+      resultBox.classList.add("hidden");
+      transcriptBox.classList.add("hidden");
+
+      let endpoint = "";
+      if (currentMode === 'silence') {
+        endpoint = "/api/remove-silence";
+        statusMsg.innerText = "Trimming silent pauses... please wait";
+      } else {
+        endpoint = "/api/process";
+        formData.append("mode", "silence");
+        formData.append("custom_words", document.getElementById("badWordsInput").value);
+        statusMsg.innerText = "Transcribing & silencing target words... please wait";
+      }
+
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          body: formData
+        });
+
+        if (!response.ok) {
+          throw new Error(await response.text());
+        }
+
+        const data = await response.json();
+        statusMsg.innerText = "Processing completed in " + data.elapsed_seconds + "s!";
+        
+        audioPlayer.src = data.audio_url;
+        downloadLink.href = data.audio_url;
+
+        if (data.transcript && data.censored_words) {
+          transcriptBox.classList.remove("hidden");
+          transcriptBox.innerHTML = data.transcript.map(w => {
+            const ms = Math.round(w.start * 1000);
+            const isBad = data.censored_words.some(cw => Math.abs(cw.start - ms) < 150);
+            return isBad ? `<span class="bad-word">[MUTED: ${w.word}]</span>` : w.word;
+          }).join(" ");
+        }
+
+        resultBox.classList.remove("hidden");
+      } catch (err) {
+        statusMsg.innerText = "Error: " + err.message;
+      } finally {
+        processBtn.disabled = false;
+      }
     }
   </script>
 
