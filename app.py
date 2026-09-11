@@ -1,12 +1,8 @@
 """
 Clean Content — Backend API
 ============================
-Comprehensive Censorship Suite:
-- Drugs & Narcotics
-- Weapons, Firearms & Violence
-- Alcohol & Substances
-- Profanities, Slurs & Regional Abuses
-- Runtime Custom Words & Silent Muting
+- Clean Words (Profanity / Drugs / Guns / Regional Abuses)
+- Silence Remover (Trims silent pauses / dead air)
 """
 
 import os
@@ -22,23 +18,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from pydub import AudioSegment
+from pydub.silence import split_on_silence
 from pydub.generators import Sine
 from faster_whisper import WhisperModel
 from better_profanity import profanity
 
-# 1. Base profanity load karein
+# Base library load
 profanity.load_censor_words()
 
-# 2. Comprehensive High-Risk Keywords Dictionary
+# Comprehensive Permanent Keywords Dictionary
 PERMANENT_CUSTOM_WORDS = [
-    # --- DRUGS & NARCOTICS ---
     "cocaine", "coke", "heroin", "meth", "methamphetamine", "weed", "marijuana",
     "cannabis", "hashish", "chars", "afeem", "opium", "fentanyl", "ecstasy", 
     "mdma", "lsd", "acid", "ketamine", "crack", "morphine", "shrooms", "peyote",
     "oxycodone", "xanax", "adderall", "codeine", "lean", "dope", "pot", "ganja",
     "bhāng", "bhang", "joint", "blunt", "bong", "narcotic", "narcotics",
-
-    # --- WEAPONS, GUNS & VIOLENCE ---
     "gun", "guns", "pistol", "revolver", "rifle", "shotgun", "kalashnikov", 
     "ak47", "m16", "glock", "ammunition", "ammo", "bullet", "bullets", "grenade",
     "bomb", "explosive", "dynamite", "rpg", "missile", "knife", "dagger", "blade",
@@ -46,25 +40,18 @@ PERMANENT_CUSTOM_WORDS = [
     "shoot", "shooter", "shooting", "kill", "killer", "killing", "murder", 
     "murderer", "massacre", "assassinate", "assassination", "execution", "terrorist",
     "terrorism", "bombing", "suicide", "bloodshed",
-
-    # --- ALCOHOL & INTOXICANTS ---
     "alcohol", "beer", "vodka", "whiskey", "whisky", "rum", "tequila", "gin",
     "brandy", "wine", "champagne", "liquor", "booze", "cocktail", "sharāb", 
     "sharab", "daaru", "daru", "nashai", "intoxicated", "drunk", "hangover",
-
-    # --- URDU / HINDI / REGIONAL ABUSES ---
     "bakwas", "kamina", "kutta", "kanjar", "harami", "chutiya", "chootiya",
     "gandu", "gaandu", "saala", "pagal", "jahil", "lanat", "laanat", "beghairat",
     "ullu", "haramkhor", "bhenchod", "madarchod", "bhosdike", "randi", "tatte",
     "loda", "lauda", "chinal", "kameena", "dalle", "khinzeer", "suar",
-
-    # --- GENERAL INSULTS & EXTREME PROFANITIES ---
     "fuck", "fucker", "fucking", "fucked", "shit", "bullshit", "asshole", "bitch",
     "bastard", "cunt", "dick", "pussy", "whore", "slut", "retard", "nigger", 
     "faggot", "scumbag", "dipshit", "motherfucker"
 ]
 
-# Set lookup for instant matching
 PERMANENT_WORDS_SET = {w.strip().lower() for w in PERMANENT_CUSTOM_WORDS}
 profanity.add_censor_words(list(PERMANENT_WORDS_SET))
 
@@ -103,7 +90,6 @@ def transcribe_words(path: str):
 
 def find_bad_words(words, extra_words_str=None):
     active_banned_set = set(PERMANENT_WORDS_SET)
-    
     if extra_words_str:
         user_words = [w.strip().lower() for w in re.split(r'[, \n]+', extra_words_str) if w.strip()]
         if user_words:
@@ -128,10 +114,6 @@ def censor_replacement(duration_ms, mode):
 
 
 def apply_censor(audio: AudioSegment, hits, mode):
-    """
-    Completely silences or bleeps the detected word duration.
-    A safe padding (+-30ms) ensures no start or tail speech leaks through.
-    """
     out = AudioSegment.empty()
     cursor = 0
     events = []
@@ -159,22 +141,30 @@ def apply_censor(audio: AudioSegment, hits, mode):
     return out, events
 
 
+# ---------------- API: Word Censoring ----------------
 @app.post("/api/process")
 async def process_audio(
-    file: UploadFile = File(...),
+    file: UploadFile = File(None),
+    job_id_existing: str = Form(None),
     mode: str = Form("silence"),
     custom_words: str = Form("")
 ):
     if mode not in ("beep", "silence", "remove"):
         raise HTTPException(400, "Invalid mode. Use beep, silence, or remove.")
 
-    job_id = uuid.uuid4().hex[:12]
-    job_dir = JOBS_DIR / job_id
+    new_job_id = uuid.uuid4().hex[:12]
+    job_dir = JOBS_DIR / new_job_id
     job_dir.mkdir(parents=True, exist_ok=True)
-    in_path = job_dir / f"input{Path(file.filename or 'audio.wav').suffix or '.wav'}"
+    in_path = job_dir / "input.mp3"
 
-    with open(in_path, "wb") as f:
-        shutil.copyfileobj(file.file, f)
+    # Agar user ne pehle silence-remover chala rakha ho
+    if job_id_existing and (JOBS_DIR / job_id_existing / "output.mp3").exists():
+        shutil.copyfile(JOBS_DIR / job_id_existing / "output.mp3", in_path)
+    elif file:
+        with open(in_path, "wb") as f:
+            shutil.copyfileobj(file.file, f)
+    else:
+        raise HTTPException(400, "No file provided.")
 
     t0 = time.time()
     try:
@@ -194,11 +184,63 @@ async def process_audio(
     elapsed = round(time.time() - t0, 1)
 
     return JSONResponse({
-        "job_id": job_id,
+        "job_id": new_job_id,
         "elapsed_seconds": elapsed,
         "transcript": [{"word": w["word"], "start": w["start"], "end": w["end"]} for w in words],
         "censored_words": events,
-        "audio_url": f"/api/audio/{job_id}",
+        "audio_url": f"/api/audio/{new_job_id}",
+    })
+
+
+# ---------------- API: Silence Remover ----------------
+@app.post("/api/remove-silence")
+async def remove_silence_endpoint(
+    file: UploadFile = File(None),
+    job_id_existing: str = Form(None)
+):
+    new_job_id = uuid.uuid4().hex[:12]
+    job_dir = JOBS_DIR / new_job_id
+    job_dir.mkdir(parents=True, exist_ok=True)
+    in_path = job_dir / "input.mp3"
+
+    if job_id_existing and (JOBS_DIR / job_id_existing / "output.mp3").exists():
+        shutil.copyfile(JOBS_DIR / job_id_existing / "output.mp3", in_path)
+    elif file:
+        with open(in_path, "wb") as f:
+            shutil.copyfileobj(file.file, f)
+    else:
+        raise HTTPException(400, "No file provided.")
+
+    t0 = time.time()
+    try:
+        audio = AudioSegment.from_file(in_path)
+        
+        # Dead silence remove logic
+        chunks = split_on_silence(
+            audio,
+            min_silence_len=500,  # 500ms se lamba pause
+            silence_thresh=audio.dBFS - 16, # background noise threshold
+            keep_silence=120      # 120ms natural breathing gap
+        )
+
+        if chunks:
+            trimmed_audio = chunks[0]
+            for chunk in chunks[1:]:
+                trimmed_audio += chunk
+        else:
+            trimmed_audio = audio
+
+        out_path = job_dir / "output.mp3"
+        trimmed_audio.export(out_path, format="mp3", bitrate="192k")
+    except Exception as e:
+        raise HTTPException(500, f"Silence removal failed: {e}")
+
+    elapsed = round(time.time() - t0, 1)
+
+    return JSONResponse({
+        "job_id": new_job_id,
+        "elapsed_seconds": elapsed,
+        "audio_url": f"/api/audio/{new_job_id}",
     })
 
 
@@ -207,7 +249,7 @@ def get_audio(job_id: str):
     out_path = JOBS_DIR / job_id / "output.mp3"
     if not out_path.exists():
         raise HTTPException(404, "Not found")
-    return FileResponse(out_path, media_type="audio/mpeg", filename="cleaned_audio.mp3")
+    return FileResponse(out_path, media_type="audio/mpeg", filename="processed_audio.mp3")
 
 
 app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="static")
