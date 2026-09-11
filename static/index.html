@@ -111,12 +111,63 @@
     }
     .mode-btn.selected { border-color: var(--yellow); background: var(--yellow-glow); color: var(--yellow); }
 
+    /* Word Adder Box */
+    .word-input-container {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
     .custom-input {
-      width: 100%; padding: 14px 16px; border-radius: 12px;
-      border: 1px solid var(--border); background: rgba(0,0,0,0.4);
-      color: #fff; font-size: 14px; outline: none; margin-bottom: 20px;
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.4);
+      color: #fff;
+      font-size: 14px;
+      outline: none;
     }
     .custom-input:focus { border-color: var(--yellow); }
+    .add-btn {
+      background: rgba(245, 183, 0, 0.15);
+      border: 1px solid var(--border-hover);
+      color: var(--yellow);
+      font-weight: 700;
+      padding: 0 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .add-btn:hover {
+      background: var(--yellow);
+      color: #000;
+    }
+    .words-badge-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+      min-height: 24px;
+    }
+    .word-pill {
+      background: rgba(245, 183, 0, 0.12);
+      border: 1px solid var(--border-hover);
+      color: var(--yellow);
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .word-pill span {
+      cursor: pointer;
+      color: #fff;
+      font-weight: bold;
+    }
 
     .primary-btn {
       background: var(--yellow); color: #000; border: none;
@@ -213,9 +264,17 @@
         <div class="mode-btn" data-mode="remove">✂️ Cut Word</div>
       </div>
 
-      <div style="text-align: left; margin: 16px 0;">
-        <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px; font-weight: 600;">ADD CUSTOM WORDS TO SILENCE (OPTIONAL):</label>
-        <input type="text" id="customWordsInput" class="custom-input" placeholder="e.g. stupid, idiot, bakwas (separated by comma)">
+      <!-- Add Custom Words Section -->
+      <div style="text-align: left; margin: 20px 0; background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 16px; border-radius: 16px;">
+        <label style="font-size: 12px; color: var(--muted); display: block; font-weight: 700; letter-spacing: 0.05em;">ADD CUSTOM WORDS TO SILENCE:</label>
+        
+        <div class="word-input-container">
+          <input type="text" id="customWordsInput" class="custom-input" placeholder="Type a word (e.g. bakwas, stupid)">
+          <button type="button" class="add-btn" id="addWordBtn">+ Add Word</button>
+        </div>
+
+        <!-- Dynamic List of Added Words -->
+        <div class="words-badge-list" id="wordBadgeList"></div>
       </div>
 
       <button class="primary-btn" id="processBtn">Silence Audio Now</button>
@@ -271,7 +330,8 @@
 <script>
 const API_BASE = "";
 let selectedFile = null;
-let selectedMode = "silence"; // Default set to completely silent
+let selectedMode = "silence";
+let addedWordsList = [];
 
 const fileInput = document.getElementById("fileInput");
 document.getElementById("browseBtn").onclick = () => fileInput.click();
@@ -292,6 +352,40 @@ function handleFile(file) {
   document.getElementById("step-mode").classList.remove("hidden");
   setStep(2);
 }
+
+// Add Word Button & Tag Handling
+const wordInput = document.getElementById("customWordsInput");
+const addBtn = document.getElementById("addWordBtn");
+const badgeList = document.getElementById("wordBadgeList");
+
+function addWord() {
+  const val = wordInput.value.trim().toLowerCase();
+  if (val && !addedWordsList.includes(val)) {
+    addedWordsList.push(val);
+    renderBadges();
+  }
+  wordInput.value = "";
+  wordInput.focus();
+}
+
+function removeWord(word) {
+  addedWordsList = addedWordsList.filter(w => w !== word);
+  renderBadges();
+}
+
+function renderBadges() {
+  badgeList.innerHTML = addedWordsList.map(w => 
+    `<div class="word-pill">${w} <span onclick="removeWord('${w}')">×</span></div>`
+  ).join("");
+}
+
+addBtn.onclick = addWord;
+wordInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    addWord();
+  }
+});
 
 document.querySelectorAll(".mode-btn").forEach(btn => {
   btn.onclick = () => {
@@ -316,7 +410,7 @@ document.getElementById("processBtn").onclick = async () => {
   const form = new FormData();
   form.append("file", selectedFile);
   form.append("mode", selectedMode);
-  form.append("custom_words", document.getElementById("customWordsInput").value);
+  form.append("custom_words", addedWordsList.join(", "));
 
   try {
     const res = await fetch(API_BASE + "/api/process", { method: "POST", body: form });
@@ -351,6 +445,8 @@ document.getElementById("processBtn").onclick = async () => {
 document.getElementById("startOverBtn").onclick = () => {
   selectedFile = null;
   fileInput.value = "";
+  addedWordsList = [];
+  renderBadges();
   document.getElementById("step-result").classList.add("hidden");
   document.getElementById("step-upload").classList.remove("hidden");
   setStep(1);
