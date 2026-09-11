@@ -106,64 +106,69 @@
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
     }
 
-    /* Full-Width Clickable Upload Dropzone */
+    /* 100% Clickable Upload Dropzone Label */
     .upload-zone {
       width: 100%;
       background: #151821;
       border: 2px dashed #2f3547;
       border-radius: 18px;
-      padding: 40px 20px;
+      padding: 46px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      user-select: none;
       transition: all 0.25s ease;
       margin-bottom: 24px;
     }
 
-    .upload-zone:hover {
+    .upload-zone:hover,
+    .upload-zone.dragover {
       border-color: #f59e0b;
-      background: #181c27;
+      background: #181d29;
     }
 
     .icon-box {
-      width: 80px;
-      height: 80px;
+      width: 86px;
+      height: 86px;
       background: #f59e0b;
-      border-radius: 22px;
+      border-radius: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
       box-shadow: 0 0 35px rgba(245, 158, 11, 0.5);
       transition: transform 0.2s ease;
+      pointer-events: none;
     }
 
     .upload-zone:hover .icon-box {
-      transform: scale(1.05);
+      transform: scale(1.06);
     }
 
     .card-title {
       font-size: 19px;
       font-weight: 600;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       text-align: center;
+      pointer-events: none;
     }
 
     .card-subtitle {
       font-size: 13px;
       color: #9ca3af;
       text-align: center;
+      pointer-events: none;
     }
 
     .browse-link {
       color: #f59e0b;
       text-decoration: underline;
-      font-weight: 500;
+      font-weight: 600;
     }
 
-    /* Mode Toggle Group */
+    /* Mode Selector Buttons */
     .options-group {
       display: flex;
       gap: 12px;
@@ -195,7 +200,7 @@
       box-shadow: 0 0 16px rgba(245, 158, 11, 0.2);
     }
 
-    /* Word Censor Section */
+    /* Censored Words Tab */
     #wordsSection {
       width: 100%;
       margin-bottom: 20px;
@@ -222,13 +227,14 @@
       color: #ffffff;
       font-size: 14px;
       outline: none;
+      transition: border-color 0.2s;
     }
 
     .words-input:focus {
       border-color: #f59e0b;
     }
 
-    /* Process Action Button */
+    /* Process Button */
     .process-btn {
       width: 100%;
       background: #f59e0b;
@@ -255,7 +261,7 @@
       transform: scale(0.99);
     }
 
-    /* Size Badge */
+    /* Size Indicator */
     .size-badge {
       display: inline-flex;
       align-items: center;
@@ -268,7 +274,7 @@
       border-radius: 999px;
     }
 
-    /* User Profile Footer */
+    /* Profile Footer */
     .footer {
       margin-top: 36px;
       display: flex;
@@ -294,7 +300,8 @@
       text-decoration: underline;
     }
 
-    #fileInput {
+    /* Hidden native file input */
+    .hidden-input {
       display: none;
     }
   </style>
@@ -321,12 +328,19 @@
 
     <!-- Main Card -->
     <div class="main-card">
-      <input type="file" id="fileInput" accept="audio/*,video/*" />
+      
+      <!-- Native file input with full audio/video MIME types and file extensions -->
+      <input 
+        type="file" 
+        id="fileInput" 
+        class="hidden-input" 
+        accept=".mp3,.wav,.m4a,.aac,.ogg,.flac,.mp4,.mov,.mkv,audio/*,video/*" 
+      />
 
-      <!-- Full-Width Upload Drop Area -->
-      <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+      <!-- Entire area is an HTML <label> linked directly to the file input -->
+      <label for="fileInput" class="upload-zone" id="dropZone">
         <div class="icon-box">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="#0b0c10">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="#0b0c10">
             <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
           </svg>
         </div>
@@ -334,9 +348,9 @@
         <div class="card-subtitle">
           MP3, WAV, M4A, MP4 supported. <span class="browse-link">Browse files</span>
         </div>
-      </div>
+      </label>
 
-      <!-- Mode Selector Tabs -->
+      <!-- Mode Selector -->
       <div class="options-group">
         <button type="button" class="option-btn active" id="btnSilence" onclick="selectTool('silence')">
           ✂️ Silence Remover
@@ -346,10 +360,10 @@
         </button>
       </div>
 
-      <!-- Conditional Add Words Field -->
+      <!-- Add Words (Only appears in Clean Audio mode) -->
       <div id="wordsSection" class="hidden">
         <label class="words-label" for="badWordsInput">Add words to mute (separated by comma):</label>
-        <input type="text" id="badWordsInput" class="words-input" placeholder="e.g. damn, shoot, pause" />
+        <input type="text" id="badWordsInput" class="words-input" placeholder="e.g. damn, shoot, silence" />
       </div>
 
       <!-- Process Action Button -->
@@ -362,7 +376,7 @@
       </div>
     </div>
 
-    <!-- Profile Footer -->
+    <!-- LinkedIn Footer Profile -->
     <footer class="footer">
       <span>Developed by</span>
       <a href="https://www.linkedin.com/in/zainshabir" target="_blank" rel="noopener noreferrer" class="profile-link">
@@ -376,6 +390,9 @@
 
   <script>
     let currentMode = 'silence';
+    const fileInput = document.getElementById('fileInput');
+    const uploadTitle = document.getElementById('uploadTitle');
+    const dropZone = document.getElementById('dropZone');
 
     function selectTool(mode) {
       currentMode = mode;
@@ -394,19 +411,38 @@
       }
     }
 
-    document.getElementById('fileInput').addEventListener('change', (e) => {
-      if (e.target.files.length > 0) {
-        document.getElementById('uploadTitle').innerText = e.target.files[0].name;
+    // Update display text on selecting file
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        uploadTitle.innerText = e.target.files[0].name;
+      }
+    });
+
+    // Drag & Drop visual feedback
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        fileInput.files = e.dataTransfer.files;
+        uploadTitle.innerText = e.dataTransfer.files[0].name;
       }
     });
 
     function startProcessing() {
-      const fileInput = document.getElementById('fileInput');
-      if (!fileInput.files.length) {
+      if (!fileInput.files || !fileInput.files.length) {
         alert('Please select an audio/video file first!');
         return;
       }
-      alert('Processing started for: ' + fileInput.files[0].name + ' | Mode: ' + currentMode);
+      alert(`Processing started!\nFile: ${fileInput.files[0].name}\nMode: ${currentMode}`);
     }
   </script>
 
