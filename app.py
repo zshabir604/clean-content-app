@@ -1,14 +1,6 @@
 """
 Clean Content — Backend API
-============================
-Full-audio transcription (faster-whisper) + profanity detection
-(better-profanity) + partial-word censoring (beep / silence / remove).
-
-Run locally:
-    pip install -r requirements.txt
-    uvicorn app:app --host 0.0.0.0 --port 7860
-
-Then open http://localhost:7860 in your browser.
+Completely Silent Censoring + Hardcoded & Custom Words Support
 """
 
 import os
@@ -28,7 +20,15 @@ from pydub.generators import Sine
 from faster_whisper import WhisperModel
 from better_profanity import profanity
 
+# 1. Default library words load karein
 profanity.load_censor_words()
+
+# 2. Permanent Hardcoded Words (Aap yahan mazeed apne words add kar sakte hain)
+PERMANENT_CUSTOM_WORDS = [
+    "bakwas", "kamina", "kutta", "kanjar", "harami", "chutiya", 
+    "gandu", "saala", "pagal", "jahil", "lanat", "loser"
+]
+profanity.add_censor_words(PERMANENT_CUSTOM_WORDS)
 
 APP_DIR = Path(__file__).parent
 JOBS_DIR = APP_DIR / "jobs"
@@ -43,14 +43,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ---------------------------------------------------------------
-# Whisper model — loaded once, kept warm in memory.
-# "tiny" = fastest (needed to stay near the 30s target on free CPU
-# hosting). Swap to "base" for better accuracy if your host has
-# more CPU/RAM and speed isn't critical.
-# ---------------------------------------------------------------
 _model = None
-
 
 def get_model():
     global _model
@@ -70,58 +63,71 @@ def transcribe_words(path: str):
     return words
 
 
-def find_bad_words(words, extra_words=None):
-    if extra_words:
-        profanity.add_censor_words(extra_words)
+def find_bad_words(words, extra_words_str=None):
+    custom_set = set(PERMANENT_CUSTOM_WORDS)
+    if extra_words_str:
+        user_words = [w.strip().lower() for w in re.split(r'[, \n]+', extra_words_str) if w.strip()]
+        if user_words:
+            profanity.add_censor_words(user_words)
+            custom_set.update(user_words)
+
     hits = []
     for w in words:
         clean = re.sub(r"[^a-zA-Z']", "", w["word"]).lower()
-        if clean and profanity.contains_profanity(clean):
-            hits.append(w)
+        if clean:
+            if clean in custom_set or profanity.contains_profanity(clean):
+                hits.append(w)
     return hits
 
 
 def censor_replacement(duration_ms, mode):
     if mode == "remove":
         return None
+    # Agar silence chuna ho ya default mode ho to AudioSegment.silent use hoga
     if mode == "silence":
         return AudioSegment.silent(duration=duration_ms)
+    # Beep mode ke liye sine wave generator
     return Sine(1000).to_audio_segment(duration=duration_ms).apply_gain(-3)
 
 
-def apply_partial_censor(audio: AudioSegment, hits, mode):
+def apply_censor(audio: AudioSegment, hits, mode):
     """
-    Keeps roughly the first letter's worth of sound (~18% of the word's
-    duration, minimum 60ms) untouched, then applies beep/silence/remove
-    to the rest of the word. This is an approximation — true phoneme-
-    level cutting needs forced alignment, which is far heavier to run.
+    Completely censors/silences the entire duration of the detected word.
+    No initial sound is preserved.
     """
     out = AudioSegment.empty()
     cursor = 0
     events = []
     for h in sorted(hits, key=lambda x: x["start"]):
-        start_ms = int(h["start"] * 1000)
-        end_ms = int(h["end"] * 1000)
-        dur = end_ms - start_ms
-        if dur <= 10:
+        # Halka buffer (+-20ms) taake word ka shuru aur aakhir mukammal mute ho jaye
+        start_ms = max(0, int(h["start"] * 1000) - 20)
+        end_ms = min(len(audio), int(h["end"] * 1000) + 20)
+
+        if start_ms < cursor:
+            start_ms = cursor
+        if start_ms >= end_ms:
             continue
-        keep_ms = min(dur - 10, max(60, int(dur * 0.18)))
-        censor_start = start_ms + keep_ms
-        censor_end = end_ms
-        if censor_start >= censor_end or censor_start < cursor:
-            continue
-        out += audio[cursor:censor_start]
-        repl = censor_replacement(censor_end - censor_start, mode)
+
+        out += audio[cursor:start_ms]
+        duration_ms = end_ms - start_ms
+
+        repl = censor_replacement(duration_ms, mode)
         if repl is not None:
             out += repl
-        events.append({"word": h["word"], "start": start_ms, "end": censor_end, "mode": mode})
-        cursor = censor_end
+
+        events.append({"word": h["word"], "start": start_ms, "end": end_ms, "mode": mode})
+        cursor = end_ms
+
     out += audio[cursor:]
     return out, events
 
 
 @app.post("/api/process")
-async def process_audio(file: UploadFile = File(...), mode: str = Form("beep")):
+async def process_audio(
+    file: UploadFile = File(...),
+    mode: str = Form("silence"),
+    custom_words: str = Form("")
+):
     if mode not in ("beep", "silence", "remove"):
         raise HTTPException(400, "Invalid mode. Use beep, silence, or remove.")
 
@@ -140,8 +146,8 @@ async def process_audio(file: UploadFile = File(...), mode: str = Form("beep")):
         audio.export(wav_path, format="wav")
 
         words = transcribe_words(str(wav_path))
-        hits = find_bad_words(words)
-        censored, events = apply_partial_censor(audio, hits, mode)
+        hits = find_bad_words(words, extra_words_str=custom_words)
+        censored, events = apply_censor(audio, hits, mode)
 
         out_path = job_dir / "output.mp3"
         censored.export(out_path, format="mp3", bitrate="192k")
@@ -167,5 +173,4 @@ def get_audio(job_id: str):
     return FileResponse(out_path, media_type="audio/mpeg", filename="cleaned_audio.mp3")
 
 
-# Serve the frontend (index.html + assets) from /static at the root path
 app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="static")
