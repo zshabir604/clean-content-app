@@ -1,6 +1,12 @@
 """
 Clean Content — Backend API
-Completely Silent Censoring + Hardcoded & Custom Words Support
+============================
+Comprehensive Censorship Suite:
+- Drugs & Narcotics
+- Weapons, Firearms & Violence
+- Alcohol & Substances
+- Profanities, Slurs & Regional Abuses
+- Runtime Custom Words & Silent Muting
 """
 
 import os
@@ -20,15 +26,47 @@ from pydub.generators import Sine
 from faster_whisper import WhisperModel
 from better_profanity import profanity
 
-# 1. Default library words load karein
+# 1. Base profanity load karein
 profanity.load_censor_words()
 
-# 2. Permanent Hardcoded Words (Aap yahan mazeed apne words add kar sakte hain)
+# 2. Comprehensive High-Risk Keywords Dictionary
 PERMANENT_CUSTOM_WORDS = [
-    "bakwas", "kamina", "kutta", "kanjar", "harami", "chutiya", 
-    "gandu", "saala", "pagal", "jahil", "lanat", "loser"
+    # --- DRUGS & NARCOTICS ---
+    "cocaine", "coke", "heroin", "meth", "methamphetamine", "weed", "marijuana",
+    "cannabis", "hashish", "chars", "afeem", "opium", "fentanyl", "ecstasy", 
+    "mdma", "lsd", "acid", "ketamine", "crack", "morphine", "shrooms", "peyote",
+    "oxycodone", "xanax", "adderall", "codeine", "lean", "dope", "pot", "ganja",
+    "bhāng", "bhang", "joint", "blunt", "bong", "narcotic", "narcotics",
+
+    # --- WEAPONS, GUNS & VIOLENCE ---
+    "gun", "guns", "pistol", "revolver", "rifle", "shotgun", "kalashnikov", 
+    "ak47", "m16", "glock", "ammunition", "ammo", "bullet", "bullets", "grenade",
+    "bomb", "explosive", "dynamite", "rpg", "missile", "knife", "dagger", "blade",
+    "machete", "sword", "firearm", "firearms", "sniper", "carbine", "trigger",
+    "shoot", "shooter", "shooting", "kill", "killer", "killing", "murder", 
+    "murderer", "massacre", "assassinate", "assassination", "execution", "terrorist",
+    "terrorism", "bombing", "suicide", "bloodshed",
+
+    # --- ALCOHOL & INTOXICANTS ---
+    "alcohol", "beer", "vodka", "whiskey", "whisky", "rum", "tequila", "gin",
+    "brandy", "wine", "champagne", "liquor", "booze", "cocktail", "sharāb", 
+    "sharab", "daaru", "daru", "nashai", "intoxicated", "drunk", "hangover",
+
+    # --- URDU / HINDI / REGIONAL ABUSES ---
+    "bakwas", "kamina", "kutta", "kanjar", "harami", "chutiya", "chootiya",
+    "gandu", "gaandu", "saala", "pagal", "jahil", "lanat", "laanat", "beghairat",
+    "ullu", "haramkhor", "bhenchod", "madarchod", "bhosdike", "randi", "tatte",
+    "loda", "lauda", "chinal", "kameena", "dalle", "khinzeer", "suar",
+
+    # --- GENERAL INSULTS & EXTREME PROFANITIES ---
+    "fuck", "fucker", "fucking", "fucked", "shit", "bullshit", "asshole", "bitch",
+    "bastard", "cunt", "dick", "pussy", "whore", "slut", "retard", "nigger", 
+    "faggot", "scumbag", "dipshit", "motherfucker"
 ]
-profanity.add_censor_words(PERMANENT_CUSTOM_WORDS)
+
+# Set lookup for instant matching
+PERMANENT_WORDS_SET = {w.strip().lower() for w in PERMANENT_CUSTOM_WORDS}
+profanity.add_censor_words(list(PERMANENT_WORDS_SET))
 
 APP_DIR = Path(__file__).parent
 JOBS_DIR = APP_DIR / "jobs"
@@ -64,18 +102,19 @@ def transcribe_words(path: str):
 
 
 def find_bad_words(words, extra_words_str=None):
-    custom_set = set(PERMANENT_CUSTOM_WORDS)
+    active_banned_set = set(PERMANENT_WORDS_SET)
+    
     if extra_words_str:
         user_words = [w.strip().lower() for w in re.split(r'[, \n]+', extra_words_str) if w.strip()]
         if user_words:
             profanity.add_censor_words(user_words)
-            custom_set.update(user_words)
+            active_banned_set.update(user_words)
 
     hits = []
     for w in words:
         clean = re.sub(r"[^a-zA-Z']", "", w["word"]).lower()
         if clean:
-            if clean in custom_set or profanity.contains_profanity(clean):
+            if clean in active_banned_set or profanity.contains_profanity(clean):
                 hits.append(w)
     return hits
 
@@ -83,25 +122,23 @@ def find_bad_words(words, extra_words_str=None):
 def censor_replacement(duration_ms, mode):
     if mode == "remove":
         return None
-    # Agar silence chuna ho ya default mode ho to AudioSegment.silent use hoga
     if mode == "silence":
         return AudioSegment.silent(duration=duration_ms)
-    # Beep mode ke liye sine wave generator
     return Sine(1000).to_audio_segment(duration=duration_ms).apply_gain(-3)
 
 
 def apply_censor(audio: AudioSegment, hits, mode):
     """
-    Completely censors/silences the entire duration of the detected word.
-    No initial sound is preserved.
+    Completely silences or bleeps the detected word duration.
+    A safe padding (+-30ms) ensures no start or tail speech leaks through.
     """
     out = AudioSegment.empty()
     cursor = 0
     events = []
+    
     for h in sorted(hits, key=lambda x: x["start"]):
-        # Halka buffer (+-20ms) taake word ka shuru aur aakhir mukammal mute ho jaye
-        start_ms = max(0, int(h["start"] * 1000) - 20)
-        end_ms = min(len(audio), int(h["end"] * 1000) + 20)
+        start_ms = max(0, int(h["start"] * 1000) - 30)
+        end_ms = min(len(audio), int(h["end"] * 1000) + 30)
 
         if start_ms < cursor:
             start_ms = cursor
