@@ -23,7 +23,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 20px 60px;
+      padding: 40px 20px 30px;
     }
 
     .wrapper {
@@ -32,6 +32,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      flex: 1;
     }
 
     /* Top Bar */
@@ -40,7 +41,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 50px;
+      margin-bottom: 40px;
     }
 
     .logo {
@@ -66,11 +67,11 @@
     /* Hero Text */
     .hero-title {
       text-align: center;
-      font-size: 42px;
+      font-size: 40px;
       font-weight: 800;
       line-height: 1.2;
       letter-spacing: -1px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .hero-title .line-1 {
@@ -85,65 +86,88 @@
 
     .hero-desc {
       text-align: center;
-      font-size: 16px;
+      font-size: 15px;
       line-height: 1.6;
       color: #9ca3af;
       max-width: 520px;
-      margin: 0 auto 40px;
+      margin: 0 auto 36px;
     }
 
-    /* Full-Size Upload Box */
-    .upload-card {
+    /* Main Container Card */
+    .main-card {
       width: 100%;
       background: #12141a;
       border: 1px solid #222634;
       border-radius: 24px;
-      padding: 44px 32px;
+      padding: 32px;
       display: flex;
       flex-direction: column;
       align-items: center;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
     }
 
-    .icon-box {
-      width: 68px;
-      height: 68px;
-      background: #f59e0b;
+    /* Full-Width Clickable Upload Dropzone */
+    .upload-zone {
+      width: 100%;
+      background: #151821;
+      border: 2px dashed #2f3547;
       border-radius: 18px;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      margin-bottom: 24px;
+    }
+
+    .upload-zone:hover {
+      border-color: #f59e0b;
+      background: #181c27;
+    }
+
+    .icon-box {
+      width: 80px;
+      height: 80px;
+      background: #f59e0b;
+      border-radius: 22px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 22px;
-      box-shadow: 0 0 35px rgba(245, 158, 11, 0.45);
+      margin-bottom: 18px;
+      box-shadow: 0 0 35px rgba(245, 158, 11, 0.5);
+      transition: transform 0.2s ease;
+    }
+
+    .upload-zone:hover .icon-box {
+      transform: scale(1.05);
     }
 
     .card-title {
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       text-align: center;
     }
 
     .card-subtitle {
-      font-size: 14px;
+      font-size: 13px;
       color: #9ca3af;
-      margin-bottom: 28px;
       text-align: center;
     }
 
     .browse-link {
       color: #f59e0b;
       text-decoration: underline;
-      cursor: pointer;
       font-weight: 500;
     }
 
-    /* Option Toggle Buttons */
+    /* Mode Toggle Group */
     .options-group {
       display: flex;
-      gap: 14px;
+      gap: 12px;
       width: 100%;
-      max-width: 440px;
       margin-bottom: 20px;
     }
 
@@ -153,7 +177,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 12px 18px;
+      padding: 12px;
       border-radius: 999px;
       font-size: 14px;
       font-weight: 500;
@@ -174,7 +198,6 @@
     /* Word Censor Section */
     #wordsSection {
       width: 100%;
-      max-width: 440px;
       margin-bottom: 20px;
       display: flex;
       flex-direction: column;
@@ -192,21 +215,47 @@
 
     .words-input {
       width: 100%;
-      padding: 12px 16px;
+      padding: 13px 16px;
       border-radius: 12px;
       background: #0b0c10;
       border: 1px solid #282d3d;
       color: #ffffff;
       font-size: 14px;
       outline: none;
-      transition: border-color 0.2s;
     }
 
     .words-input:focus {
       border-color: #f59e0b;
     }
 
-    /* Size Info */
+    /* Process Action Button */
+    .process-btn {
+      width: 100%;
+      background: #f59e0b;
+      color: #000000;
+      border: none;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      margin-bottom: 16px;
+    }
+
+    .process-btn:hover {
+      background: #d97706;
+    }
+
+    .process-btn:active {
+      transform: scale(0.99);
+    }
+
+    /* Size Badge */
     .size-badge {
       display: inline-flex;
       align-items: center;
@@ -217,7 +266,32 @@
       font-size: 12px;
       padding: 6px 14px;
       border-radius: 999px;
-      margin-top: 6px;
+    }
+
+    /* User Profile Footer */
+    .footer {
+      margin-top: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    .profile-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #f59e0b;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+
+    .profile-link:hover {
+      color: #fbbf24;
+      text-decoration: underline;
     }
 
     #fileInput {
@@ -234,7 +308,7 @@
       <div class="badge">v1.1 Multi-Tool</div>
     </div>
 
-    <!-- Main Title Lines -->
+    <!-- Main Title -->
     <h1 class="hero-title">
       <span class="line-1">Smart Audio Suite.</span>
       <span class="line-2">Clean & Cut.</span>
@@ -245,23 +319,24 @@
       Remove awkward pauses with Silence Remover, or sanitize speech & sensitive words with Complete Silence.
     </p>
 
-    <!-- Main Card Box -->
-    <div class="upload-card">
-      <div class="icon-box">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="#0b0c10">
-          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-        </svg>
-      </div>
-
-      <div class="card-title">Select or drop your audio clip</div>
-      <div class="card-subtitle">
-        MP3, WAV, M4A, MP4 supported. 
-        <span class="browse-link" onclick="document.getElementById('fileInput').click()">Browse files</span>
-      </div>
-
+    <!-- Main Card -->
+    <div class="main-card">
       <input type="file" id="fileInput" accept="audio/*,video/*" />
 
-      <!-- Mode Toggle Buttons -->
+      <!-- Full-Width Upload Drop Area -->
+      <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+        <div class="icon-box">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="#0b0c10">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+          </svg>
+        </div>
+        <div class="card-title" id="uploadTitle">Select or drop your audio clip</div>
+        <div class="card-subtitle">
+          MP3, WAV, M4A, MP4 supported. <span class="browse-link">Browse files</span>
+        </div>
+      </div>
+
+      <!-- Mode Selector Tabs -->
       <div class="options-group">
         <button type="button" class="option-btn active" id="btnSilence" onclick="selectTool('silence')">
           ✂️ Silence Remover
@@ -271,20 +346,39 @@
         </button>
       </div>
 
-      <!-- Censoring Words Input (Clean Audio Mode Only) -->
+      <!-- Conditional Add Words Field -->
       <div id="wordsSection" class="hidden">
         <label class="words-label" for="badWordsInput">Add words to mute (separated by comma):</label>
         <input type="text" id="badWordsInput" class="words-input" placeholder="e.g. damn, shoot, pause" />
       </div>
 
+      <!-- Process Action Button -->
+      <button type="button" class="process-btn" onclick="startProcessing()">
+        ⚡ Process Audio
+      </button>
+
       <div class="size-badge">
         ⏱️ Max 100 MB
       </div>
     </div>
+
+    <!-- Profile Footer -->
+    <footer class="footer">
+      <span>Developed by</span>
+      <a href="https://www.linkedin.com/in/zainshabir" target="_blank" rel="noopener noreferrer" class="profile-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
+        </svg>
+        Zain Shabir
+      </a>
+    </footer>
   </div>
 
   <script>
+    let currentMode = 'silence';
+
     function selectTool(mode) {
+      currentMode = mode;
       const btnSilence = document.getElementById('btnSilence');
       const btnClean = document.getElementById('btnClean');
       const wordsSection = document.getElementById('wordsSection');
@@ -302,9 +396,18 @@
 
     document.getElementById('fileInput').addEventListener('change', (e) => {
       if (e.target.files.length > 0) {
-        document.querySelector('.card-title').innerText = e.target.files[0].name;
+        document.getElementById('uploadTitle').innerText = e.target.files[0].name;
       }
     });
+
+    function startProcessing() {
+      const fileInput = document.getElementById('fileInput');
+      if (!fileInput.files.length) {
+        alert('Please select an audio/video file first!');
+        return;
+      }
+      alert('Processing started for: ' + fileInput.files[0].name + ' | Mode: ' + currentMode);
+    }
   </script>
 
 </body>
