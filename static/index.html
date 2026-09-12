@@ -15,27 +15,27 @@
     body {
       background-color: #0b0c10;
       background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-      background-size: 34px 34px;
+        radial-gradient(circle at 50% 18%, rgba(245, 158, 11, 0.08) 0%, transparent 55%),
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+      background-size: 100% 100%, 38px 38px, 38px 38px;
       color: #ffffff;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 24px 30px;
+      padding: 40px 30px;
       overflow-x: hidden;
     }
 
-    /* Responsive Wrapper: Desktop par wide screen cover karega */
+    /* Screen Filling Dynamic Container */
     .wrapper {
       width: 100%;
-      max-width: 820px;
+      max-width: 1050px;
       display: flex;
       flex-direction: column;
       align-items: center;
       flex: 1;
-      transition: max-width 0.3s ease;
     }
 
     /* Top Bar */
@@ -44,11 +44,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 28px;
+      margin-bottom: 30px;
     }
 
     .logo {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 800;
       letter-spacing: -0.5px;
     }
@@ -62,77 +62,90 @@
       color: #f59e0b;
       font-size: 13px;
       font-weight: 600;
-      padding: 6px 14px;
+      padding: 6px 16px;
       border-radius: 999px;
-      background: rgba(245, 158, 11, 0.06);
+      background: rgba(245, 158, 11, 0.08);
     }
 
-    /* Main Card Container */
+    /* Main Container Card */
     .main-card {
       width: 100%;
       background: #12141a;
       border: 1px solid #222634;
-      border-radius: 28px;
-      padding: 38px 32px;
+      border-radius: 32px;
+      padding: 50px 45px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.75);
+      box-shadow: 0 28px 60px rgba(0, 0, 0, 0.8);
       position: relative;
     }
 
-    /* Upload Zone */
+    /* Enlarged Upload Zone */
     .upload-zone {
       width: 100%;
       background: #151821;
       border: 2px dashed #2f3547;
-      border-radius: 20px;
-      padding: 50px 24px;
+      border-radius: 26px;
+      padding: 70px 24px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       user-select: none;
-      transition: all 0.3s ease;
-      margin-bottom: 24px;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      margin-bottom: 26px;
     }
 
     .upload-zone:hover,
     .upload-zone.dragover {
       border-color: #f59e0b;
-      background: #181d29;
-      transform: translateY(-2px);
+      background: #191e2b;
+      transform: translateY(-3px);
     }
 
+    /* Big Hero Icon (Highlighted Area Expanded) */
     .icon-box {
-      width: 90px;
-      height: 90px;
+      width: 120px;
+      height: 120px;
       background: #f59e0b;
-      border-radius: 26px;
+      border-radius: 34px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 18px;
-      box-shadow: 0 0 35px rgba(245, 158, 11, 0.45);
-      transition: transform 0.25s ease;
+      margin-bottom: 26px;
+      box-shadow: 0 0 50px rgba(245, 158, 11, 0.55);
+      transition: all 0.35s ease;
       pointer-events: none;
+      animation: pulseGlow 3s infinite ease-in-out;
     }
 
     .upload-zone:hover .icon-box {
-      transform: scale(1.06);
+      transform: scale(1.08);
+      box-shadow: 0 0 65px rgba(245, 158, 11, 0.8);
+    }
+
+    .icon-box svg {
+      width: 58px;
+      height: 58px;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 45px rgba(245, 158, 11, 0.45); }
+      50% { box-shadow: 0 0 65px rgba(245, 158, 11, 0.7); }
     }
 
     .card-title {
-      font-size: 20px;
+      font-size: 24px;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       text-align: center;
       pointer-events: none;
     }
 
     .card-subtitle {
-      font-size: 14px;
+      font-size: 15px;
       color: #9ca3af;
       text-align: center;
       pointer-events: none;
@@ -148,12 +161,12 @@
     .file-badge-box {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       background: rgba(245, 158, 11, 0.08);
       border: 1px solid rgba(245, 158, 11, 0.35);
-      padding: 14px 20px;
-      border-radius: 16px;
-      margin-bottom: 22px;
+      padding: 16px 24px;
+      border-radius: 18px;
+      margin-bottom: 24px;
       width: 100%;
       animation: popIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -164,7 +177,7 @@
     }
 
     .file-name-text {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       color: #fff;
       white-space: nowrap;
@@ -174,7 +187,7 @@
     }
 
     .change-file-btn {
-      font-size: 12px;
+      font-size: 13px;
       color: #f59e0b;
       background: transparent;
       border: none;
@@ -187,15 +200,15 @@
     .buttons-track {
       display: flex;
       width: 100%;
-      gap: 12px;
-      margin-bottom: 20px;
+      gap: 14px;
+      margin-bottom: 24px;
       transition: gap 0.4s ease;
     }
 
     .option-btn {
-      height: 52px;
+      height: 56px;
       border-radius: 999px;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       display: flex;
       align-items: center;
@@ -211,11 +224,11 @@
     }
 
     #btnSilence {
-      width: calc(50% - 6px);
+      width: calc(50% - 7px);
     }
 
     #btnClean {
-      width: calc(50% - 6px);
+      width: calc(50% - 7px);
     }
 
     .option-btn:hover {
@@ -223,7 +236,7 @@
       color: #fff;
     }
 
-    /* Smooth Expansion of Silence Button */
+    /* Expand Animation on Silence click */
     .buttons-track.silence-full-active {
       gap: 0px;
     }
@@ -233,7 +246,7 @@
       background: #1f2330 !important;
       border-color: #f59e0b !important;
       color: #ffffff !important;
-      box-shadow: 0 0 22px rgba(245, 158, 11, 0.3) !important;
+      box-shadow: 0 0 24px rgba(245, 158, 11, 0.35) !important;
     }
 
     .buttons-track.silence-full-active #btnClean {
@@ -249,7 +262,7 @@
       background: #1f2330;
       border-color: #f59e0b;
       color: #ffffff;
-      box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
+      box-shadow: 0 0 22px rgba(245, 158, 11, 0.25);
     }
 
     /* Clean Audio Options */
@@ -257,17 +270,17 @@
       width: 100%;
       background: rgba(255, 255, 255, 0.02);
       border: 1px solid #222634;
-      border-radius: 18px;
-      padding: 20px;
-      margin-bottom: 20px;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
       animation: slideInDown 0.35s ease forwards;
     }
 
     .config-label {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
       color: #9ca3af;
       letter-spacing: 0.05em;
@@ -275,17 +288,17 @@
 
     .censor-modes {
       display: flex;
-      gap: 10px;
+      gap: 12px;
     }
 
     .sub-mode-pill {
       flex: 1;
-      padding: 11px 8px;
-      border-radius: 12px;
+      padding: 13px 8px;
+      border-radius: 14px;
       border: 1px solid #282d3d;
       background: #0b0c10;
       color: #9ca3af;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
@@ -300,8 +313,8 @@
 
     .words-input {
       width: 100%;
-      padding: 13px 16px;
-      border-radius: 12px;
+      padding: 14px 18px;
+      border-radius: 14px;
       background: #0b0c10;
       border: 1px solid #282d3d;
       color: #ffffff;
@@ -319,17 +332,17 @@
       background: #f59e0b;
       color: #000000;
       border: none;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
-      padding: 14px;
-      border-radius: 14px;
+      padding: 16px;
+      border-radius: 16px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 18px rgba(245, 158, 11, 0.3);
+      box-shadow: 0 4px 22px rgba(245, 158, 11, 0.35);
     }
 
     .start-process-btn:hover {
@@ -346,21 +359,21 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
-      margin: 18px 0;
+      gap: 14px;
+      margin: 20px 0;
       animation: fadeIn 0.3s ease;
     }
 
     .wave-bars {
       display: flex;
       align-items: center;
-      gap: 6px;
-      height: 40px;
+      gap: 7px;
+      height: 44px;
     }
 
     .bar {
-      width: 5px;
-      height: 8px;
+      width: 6px;
+      height: 10px;
       background: #f59e0b;
       border-radius: 99px;
       animation: waveMove 0.9s ease-in-out infinite alternate;
@@ -374,15 +387,15 @@
     .bar:nth-child(6) { animation-delay: 0.35s; }
 
     @keyframes waveMove {
-      0% { height: 8px; opacity: 0.4; }
-      100% { height: 40px; opacity: 1; box-shadow: 0 0 12px rgba(245, 158, 11, 0.7); }
+      0% { height: 10px; opacity: 0.4; }
+      100% { height: 44px; opacity: 1; box-shadow: 0 0 14px rgba(245, 158, 11, 0.8); }
     }
 
     /* Result Stage */
     .result-box {
       width: 100%;
-      margin-top: 16px;
-      padding-top: 22px;
+      margin-top: 18px;
+      padding-top: 24px;
       border-top: 1px solid #222634;
       display: flex;
       flex-direction: column;
@@ -392,7 +405,7 @@
 
     audio {
       width: 100%;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       outline: none;
     }
 
@@ -403,16 +416,16 @@
       text-decoration: none;
       font-weight: 700;
       font-size: 15px;
-      padding: 14px;
-      border-radius: 14px;
+      padding: 15px;
+      border-radius: 16px;
       text-align: center;
       transition: all 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.3);
-      margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
+      margin-bottom: 18px;
     }
 
     .download-btn:hover {
@@ -423,8 +436,8 @@
       width: 100%;
       background: rgba(245, 158, 11, 0.05);
       border: 1.5px dashed rgba(245, 158, 11, 0.35);
-      border-radius: 16px;
-      padding: 16px;
+      border-radius: 18px;
+      padding: 18px;
       text-align: center;
       cursor: pointer;
       transition: all 0.25s ease;
@@ -438,33 +451,33 @@
 
     .transcript-box {
       width: 100%;
-      max-height: 140px;
+      max-height: 150px;
       overflow-y: auto;
       background: #0b0c10;
       border: 1px solid #242836;
-      border-radius: 14px;
-      padding: 14px;
-      font-size: 13px;
+      border-radius: 16px;
+      padding: 16px;
+      font-size: 14px;
       line-height: 1.7;
       color: #d1d5db;
       text-align: left;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
 
     .bad-word {
       color: #f59e0b;
       font-weight: 700;
       background: rgba(245, 158, 11, 0.15);
-      padding: 2px 5px;
+      padding: 2px 6px;
       border-radius: 4px;
     }
 
     .status-msg {
-      font-size: 13px;
+      font-size: 14px;
       color: #9ca3af;
-      margin-top: 12px;
+      margin-top: 14px;
       text-align: center;
-      min-height: 18px;
+      min-height: 20px;
     }
 
     .size-badge {
@@ -474,31 +487,31 @@
       background: #1b1e28;
       border: 1px solid #242836;
       color: #9ca3af;
-      font-size: 12px;
-      padding: 6px 14px;
+      font-size: 13px;
+      padding: 8px 18px;
       border-radius: 999px;
-      margin-top: 20px;
+      margin-top: 22px;
     }
 
     /* Footer */
     .footer {
       width: 100%;
-      margin-top: 36px;
+      margin-top: 40px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 12px;
-      font-size: 13px;
+      font-size: 14px;
       color: #9ca3af;
     }
 
     .profile-card {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       background: #12141a;
       border: 1px solid #222634;
-      padding: 8px 18px;
+      padding: 10px 22px;
       border-radius: 999px;
       text-decoration: none;
       transition: all 0.2s ease;
@@ -511,8 +524,8 @@
     }
 
     .avatar-img {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       object-fit: cover;
       border: 1.5px solid #f59e0b;
@@ -521,12 +534,12 @@
     .profile-name {
       color: #ffffff;
       font-weight: 600;
-      font-size: 13px;
+      font-size: 14px;
     }
 
     .profile-role {
       color: #f59e0b;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 500;
       margin-left: 2px;
     }
@@ -543,11 +556,15 @@
 
     .hidden { display: none !important; }
 
-    /* Mobile Friendly Constraints */
-    @media (max-width: 600px) {
+    /* Mobile Adaptations */
+    @media (max-width: 650px) {
+      body { padding: 25px 16px; }
       .wrapper { max-width: 100%; }
-      .main-card { padding: 24px 18px; border-radius: 22px; }
-      .upload-zone { padding: 36px 16px; }
+      .main-card { padding: 28px 20px; border-radius: 24px; }
+      .upload-zone { padding: 45px 16px; }
+      .icon-box { width: 95px; height: 95px; border-radius: 26px; }
+      .icon-box svg { width: 46px; height: 46px; }
+      .card-title { font-size: 19px; }
       .censor-modes { flex-direction: column; }
     }
   </style>
@@ -555,7 +572,7 @@
 <body>
 
   <div class="wrapper">
-    <!-- Navbar -->
+    <!-- Top Navbar -->
     <div class="top-bar">
       <div class="logo">CleanContent <span>.ai</span></div>
       <div class="badge">v1.1 Multi-Tool</div>
@@ -566,10 +583,10 @@
       
       <input type="file" id="fileInput" class="hidden" accept="*/*" />
 
-      <!-- Step 1: Upload Dropzone Area -->
+      <!-- Step 1: Enlarged Hero Upload Area -->
       <label for="fileInput" class="upload-zone" id="dropZone">
         <div class="icon-box">
-          <svg width="42" height="42" viewBox="0 0 24 24" fill="#0b0c10">
+          <svg viewBox="0 0 24 24" fill="#0b0c10">
             <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
           </svg>
         </div>
@@ -581,7 +598,7 @@
 
       <!-- Active File Loaded Badge -->
       <div class="file-badge-box hidden" id="fileBadgeBox">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M9 18V5l12-2v13"></path>
           <circle cx="6" cy="18" r="3"></circle>
           <circle cx="18" cy="16" r="3"></circle>
@@ -600,7 +617,7 @@
         </button>
       </div>
 
-      <!-- Clean Audio Specific Sub-Settings + Start Process Button -->
+      <!-- Clean Audio Specific Sub-Settings -->
       <div id="cleanConfigSection" class="clean-config-box hidden">
         <div>
           <div class="config-label" style="margin-bottom: 8px;">CENSORSHIP METHOD:</div>
@@ -627,7 +644,7 @@
         </button>
       </div>
 
-      <!-- Processing Equalizer Animation -->
+      <!-- Processing Dynamic Equalizer Animation -->
       <div class="wave-wrapper hidden" id="waveAnimation">
         <div class="wave-bars">
           <div class="bar"></div>
@@ -637,19 +654,19 @@
           <div class="bar"></div>
           <div class="bar"></div>
         </div>
-        <span style="font-size: 13px; color: #f59e0b; font-weight: 600;" id="waveStatusText">Processing Audio...</span>
+        <span style="font-size: 14px; color: #f59e0b; font-weight: 600;" id="waveStatusText">Processing Audio...</span>
       </div>
 
       <div class="status-msg" id="statusMsg"></div>
 
-      <!-- Step 3: Result Box (Player -> Download -> Clean Option) -->
+      <!-- Step 3: Result Display Stage -->
       <div class="result-box hidden" id="resultBox">
         <audio id="audioPlayer" controls></audio>
         
         <div class="transcript-box hidden" id="transcriptBox"></div>
 
         <a id="downloadBtn" class="download-btn" download="cleaned_audio.mp3">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="7 10 12 15 17 10"></polyline>
             <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -657,10 +674,10 @@
           Download Processed Audio
         </a>
 
-        <!-- Follow-up clean tab on silence-trimmed file -->
+        <!-- Clean words prompt tab -->
         <div class="clean-prompt-tab hidden" id="followUpCleanTab" onclick="handleCleanAfterSilence()">
-          <div style="font-size: 14px; font-weight: 700; color: #f59e0b;">🔇 Clean words in this audio?</div>
-          <div style="font-size: 12px; color: #9ca3af; margin-top: 4px;">Click to open censorship options for this file</div>
+          <div style="font-size: 15px; font-weight: 700; color: #f59e0b;">🔇 Clean words in this audio?</div>
+          <div style="font-size: 13px; color: #9ca3af; margin-top: 4px;">Click to open censorship options for this file</div>
         </div>
       </div>
 
