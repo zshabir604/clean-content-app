@@ -3,6 +3,7 @@ Clean Content — Backend API
 ============================
 - Clean Words (Profanity / Drugs / Guns / Regional Abuses)
 - Silence Remover (Trims silent pauses / dead air)
+- Mode Switching Support (Switch between Beep, Silence, Remove without overlap)
 """
 
 import os
@@ -110,7 +111,8 @@ def censor_replacement(duration_ms, mode):
         return None
     if mode == "silence":
         return AudioSegment.silent(duration=duration_ms)
-    return Sine(1000).to_audio_segment(duration=duration_ms).apply_gain(-3)
+    # Gentle, soft beep tone (-18dB)
+    return Sine(1000).to_audio_segment(duration=duration_ms).apply_gain(-18)
 
 
 def apply_censor(audio: AudioSegment, hits, mode):
@@ -157,9 +159,15 @@ async def process_audio(
     job_dir.mkdir(parents=True, exist_ok=True)
     in_path = job_dir / "input.mp3"
 
-    # Agar user ne pehle silence-remover chala rakha ho
-    if job_id_existing and (JOBS_DIR / job_id_existing / "output.mp3").exists():
-        shutil.copyfile(JOBS_DIR / job_id_existing / "output.mp3", in_path)
+    # Hamesha original clean audio uthayenge taake Beep ko Mute se replace kiya ja sake bina overlapping ke
+    if job_id_existing:
+        prev_dir = JOBS_DIR / job_id_existing
+        if (prev_dir / "input.mp3").exists():
+            shutil.copyfile(prev_dir / "input.mp3", in_path)
+        elif (prev_dir / "output.mp3").exists():
+            shutil.copyfile(prev_dir / "output.mp3", in_path)
+        else:
+            raise HTTPException(400, "Previous job file not found.")
     elif file:
         with open(in_path, "wb") as f:
             shutil.copyfileobj(file.file, f)
@@ -188,7 +196,7 @@ async def process_audio(
         "elapsed_seconds": elapsed,
         "transcript": [{"word": w["word"], "start": w["start"], "end": w["end"]} for w in words],
         "censored_words": events,
-        "audio_url": f"/api/audio/{new_job_id}",
+        "audio_url": f"/api/audio/{new_job_id}?t={int(time.time())}",
     })
 
 
@@ -201,10 +209,10 @@ async def remove_silence_endpoint(
     new_job_id = uuid.uuid4().hex[:12]
     job_dir = JOBS_DIR / new_job_id
     job_dir.mkdir(parents=True, exist_ok=True)
-    in_path = job_dir / "input.mp3"
+    in_path = job_dir / "raw_input.mp3"
 
-    if job_id_existing and (JOBS_DIR / job_id_existing / "output.mp3").exists():
-        shutil.copyfile(JOBS_DIR / job_id_existing / "output.mp3", in_path)
+    if job_id_existing and (JOBS_DIR / job_id_existing / "input.mp3").exists():
+        shutil.copyfile(JOBS_DIR / job_id_existing / "input.mp3", in_path)
     elif file:
         with open(in_path, "wb") as f:
             shutil.copyfileobj(file.file, f)
@@ -215,12 +223,11 @@ async def remove_silence_endpoint(
     try:
         audio = AudioSegment.from_file(in_path)
         
-        # Dead silence remove logic
         chunks = split_on_silence(
             audio,
-            min_silence_len=500,  # 500ms se lamba pause
-            silence_thresh=audio.dBFS - 16, # background noise threshold
-            keep_silence=120      # 120ms natural breathing gap
+            min_silence_len=500,
+            silence_thresh=audio.dBFS - 16,
+            keep_silence=120
         )
 
         if chunks:
@@ -231,7 +238,11 @@ async def remove_silence_endpoint(
             trimmed_audio = audio
 
         out_path = job_dir / "output.mp3"
+        base_clean_path = job_dir / "input.mp3"
+        
+        # Silence trimmed audio ko naye base input ke tor par save karenge taake subsequent cleanings isi par hon
         trimmed_audio.export(out_path, format="mp3", bitrate="192k")
+        shutil.copyfile(out_path, base_clean_path)
     except Exception as e:
         raise HTTPException(500, f"Silence removal failed: {e}")
 
@@ -240,7 +251,7 @@ async def remove_silence_endpoint(
     return JSONResponse({
         "job_id": new_job_id,
         "elapsed_seconds": elapsed,
-        "audio_url": f"/api/audio/{new_job_id}",
+        "audio_url": f"/api/audio/{new_job_id}?t={int(time.time())}",
     })
 
 
